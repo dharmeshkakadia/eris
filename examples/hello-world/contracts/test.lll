@@ -1,0 +1,31 @@
+; Simple contract that lets you store a file hash using the file name as key.
+;
+; (calldataload 0) is the file name
+; (calldataload 32) is the hash
+
+; Definitions
+{
+(def "filename" $0)		; $N is shorthand for (calldataload N)
+(def "filehash" $32)
+
+[[0x10]] 0xDEADBEEF
+
+; Here starts the init section. There is no code in init - we just return the body.
+
+	(returnlll {		
+		; Check if anything is stored at storage address "filename" (e.g. @@filename is not 0)
+		(if @@filename 
+			; If something is stored, exit by returning 0
+			{
+				(return 0)
+			}
+			; Otherwise, we store the hash at address "filename"
+			{
+				[[filename]] filehash
+				(return 1)
+			}
+		)
+		 
+	} )
+	
+}

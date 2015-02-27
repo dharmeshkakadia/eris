@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>Hello World Dapp (Beta)</title>
+</head>
+
+<body>
+	<div>
+		<h1>Hello World</h1>
+
+		<div style="float: left; display: block; position: relative; margin-right: 12px">
+			<h3>Add file</h3>
+
+			Name <input type="text" id="filenameAdd"><br>
+
+			<!-- text area -->
+			<div style="float: left; display: block; position: relative; margin-right: 12px">Data</div>
+			<div style="float: left; display: block; position: relative;">
+				<textarea id="input" rows="15" cols="80"></textarea>
+			</div>
+
+			<!-- The button -->
+			<div style="float: left; display: block; position: relative; clear: both; margin-top: 3px;">
+				<button type="button" onclick="addFile();">Submit</button>
+			</div>
+		</div>
+
+		<div style="float: left; display: block; position: relative; margin-right: 12px">
+			<h3>Get file</h3>
+
+			Name <input type="text" id="filenameGet"><br>
+
+			<!-- text area -->
+			<div style="float: left; display: block; position: relative; margin-right: 12px">Data</div>
+			<div style="float: left; display: block; position: relative;">
+				<textarea id="output" rows="15" cols="80"></textarea>
+			</div>
+
+			<!-- The button -->
+			<div style="float: left; display: block; position: relative; clear: both; margin-top: 3px;">
+				<button type="button" onclick="getFile();">Get</button>
+			</div>
+		</div>
+	</div>
+
+	<script src="js/helloworld.js" type="text/javascript"></script>
+</body>
+
+</html>

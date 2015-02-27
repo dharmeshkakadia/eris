@@ -1,0 +1,12 @@
+{
+
+    [[0x60]]0x5050
+    (def 'dougie 0x1313)
+
+    (return 0 (lll
+        {
+            [[(calldataload 0x0)]](calldataload 0x20)
+            [['dougie]]"hi mom"
+        }
+    0))
+}

@@ -1,0 +1,34 @@
+general:
+  build_dir: cmd/epm
+
+machine:
+  services:
+    - docker
+
+  post:
+    - rm -rf ${GOPATH%%:*}/src/github.com/${CIRCLE_PROJECT_USERNAME}
+    - mkdir -p ${GOPATH%%:*}/src/github.com/${CIRCLE_PROJECT_USERNAME}
+    - cp -r ${HOME}/${CIRCLE_PROJECT_REPONAME} ${GOPATH%%:*}/src/github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}
+
+dependencies:
+  pre:
+    - "sudo apt-get update && sudo apt-get install -y libgmp3-dev"
+
+  override:
+    - go get -t -d -v ./...
+    - go build -a -race -work -x -v
+
+test:
+  override:
+    - go test -v ./... -race
+    - "cd ../../epm && go test -v ./... -race"
+    - "cd ../../chains && go test -v ./... -race"
+    - "cd ../../utils && go test -v ./... -race"
+
+deployment:
+  hub:
+    branch: master
+    commands:
+      - "cd ../../ && docker build -t eris/erisdb:epm_build_unstable ."
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker push eris/erisdb:epm_build_unstable

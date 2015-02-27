@@ -1,0 +1,6 @@
+{
+	"loading_order" : [
+		"DappHttpAPI.js",
+		"HelloWorld.js"
+	]
+}

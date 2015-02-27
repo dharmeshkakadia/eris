@@ -1,0 +1,13 @@
+{
+  "description": "Hello World test",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eris-ltd/hello-world-dapp"
+  },
+  "dependencies": {
+    "nightwatch": "^0.5.36"
+  },
+  "scripts": {
+    "start": "nightwatch"
+  }
+}

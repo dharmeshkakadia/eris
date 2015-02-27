@@ -1,0 +1,2 @@
+deploy:
+    a.lll => {{addr}}

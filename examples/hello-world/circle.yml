@@ -1,0 +1,12 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  override:
+    - echo "Don't run npm install."
+    - sudo pip install -U fig
+
+test:
+  override:
+    - ./test.sh

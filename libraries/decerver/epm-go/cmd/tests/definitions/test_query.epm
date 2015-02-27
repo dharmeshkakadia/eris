@@ -1,0 +1,4 @@
+deploy:
+    a.lll => {{A}}
+query:
+    {{A}} => 0x60 => {{B}}

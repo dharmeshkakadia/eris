@@ -1,0 +1,8 @@
+#THE HELLO WORLD DEPLOYMENT FILE
+
+#File Deployment
+!{TEST
+deploy:
+	"./test.lll" => {{ROOT}}
+!}TEST
+
