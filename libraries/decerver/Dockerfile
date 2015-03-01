@@ -48,5 +48,6 @@ EXPOSE 4001 4002/udp
 ## Thelonious
 EXPOSE 30303 30304
 
-USER $user
+# Hard-code 'eris' instead of using $user to support Docker versions < 1.3.
+USER eris
 CMD ["decerver"]

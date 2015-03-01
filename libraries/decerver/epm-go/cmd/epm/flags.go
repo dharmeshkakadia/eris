@@ -220,4 +220,14 @@ var (
 		Name:  "config",
 		Usage: "run time config edits",
 	}
+
+	noEditFlag = cli.BoolFlag{
+		Name:  "no-edit",
+		Usage: "prevent genesis.json from popping up (uses default)",
+	}
+
+	editGenesisFlag = cli.BoolFlag{
+		Name:  "edit, e",
+		Usage: "edit the genesis.json even if it is provided",
+	}
 )

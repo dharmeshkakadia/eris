@@ -74,6 +74,8 @@ var (
 			forceNameFlag,
 			typeFlag,
 			editConfigFlag,
+			noEditFlag,
+			editGenesisFlag,
 		},
 	}
 

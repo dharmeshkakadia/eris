@@ -227,8 +227,16 @@ func cliNew(c *cli.Context) {
 	deployGen := c.String("genesis")
 	tempConf := ".config.json"
 	editCfg := c.Bool("edit-config")
+	noEdit := c.Bool("no-edit")
+	editGen := c.Bool("edit")
 	// if we provide genesis, dont open editor for genesis
 	noEditor := c.IsSet("genesis")
+	// but maybe the user wants different behaviour
+	if noEdit {
+		noEditor = true
+	} else if editGen {
+		noEditor = false
+	}
 
 	chainId := deployInstallChain(tmpRoot, deployConf, deployGen, tempConf, chainType, rpc, editCfg, noEditor)
 
