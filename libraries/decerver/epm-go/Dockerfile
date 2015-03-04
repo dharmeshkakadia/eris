@@ -13,7 +13,7 @@ RUN apt-get install -y \
 
 ## Copy In the Good Stuff
 RUN go get github.com/eris-ltd/epm-go/cmd/epm
-COPY start.sh /
+COPY *.sh /
 
 ## How Does It Run?
 EXPOSE 15254 15255

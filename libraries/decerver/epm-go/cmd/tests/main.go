@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/eris-ltd/epm-go"
+	"github.com/eris-ltd/epm-go/epm"
 	"github.com/eris-ltd/thelonious/monk"
 	//"github.com/eris-ltd/thelonious/monkutil"
 	"os"
@@ -17,7 +17,6 @@ func NewMonkModule() *monk.MonkModule {
 	m.Config.RootDir = ".ethchain"
 	m.Config.LogLevel = 5
 	m.Config.GenesisConfig = "genesis.json"
-	m.Config.LLLLocal = true
 	g := m.LoadGenesis(m.Config.GenesisConfig)
 	g.Difficulty = 14
 	m.SetGenesis(g)

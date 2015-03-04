@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/hex"
-	"github.com/eris-ltd/epm-go"
+	"github.com/eris-ltd/epm-go/epm"
 	"path"
 	"testing"
 )

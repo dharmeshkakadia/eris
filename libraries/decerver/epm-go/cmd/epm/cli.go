@@ -679,6 +679,9 @@ func cliDeploy(c *cli.Context) {
 			if results != nil {
 				logger.Errorln("Failed tests:", results.FailedTests)
 			}
+			e.Stop()
+			fmt.Printf("Testing %s.pdt failed\n", pkg)
+			os.Exit(1)
 		}
 	}
 }

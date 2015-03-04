@@ -112,6 +112,10 @@ func NewEPM(chain Blockchain, log string) (*EPM, error) {
 	return e, err
 }
 
+func (e *EPM) Stop() {
+	e.chain.Shutdown()
+}
+
 // allowed commands
 var CMDS = []string{"deploy", "modify-deploy", "transact", "query", "log", "set", "endow", "test", "epm"}
 

@@ -1,0 +1,4 @@
+epmtest:
+        build: .
+        command: /test.sh
+        

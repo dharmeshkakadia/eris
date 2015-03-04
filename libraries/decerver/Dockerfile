@@ -6,11 +6,14 @@ FROM golang:1.4
 MAINTAINER Eris Industries <support@erisindustries.com>
 
 # Install tools for editing configuration files.
-RUN apt-get update && apt-get install -qy \
+
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get update && apt-get upgrade -qy && apt-get install -qy \
   jq \
+  libgmp3-dev \
   nano \
-  vim \
-  libgmp3-dev
+  vim
 
 RUN mkdir --parents $GOPATH/src/github.com/eris-ltd
 WORKDIR $GOPATH/src/github.com/eris-ltd
