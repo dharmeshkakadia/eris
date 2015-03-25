@@ -5,8 +5,12 @@ machine:
 dependencies:
   override:
     - echo "Don't run npm install."
-    - sudo pip install -U fig
+    - sudo pip install -U docker-compose
 
 test:
   override:
     - ./test.sh
+  post:
+    - docker logs $(docker-compose ps -q helloworldmaster) > $CIRCLE_ARTIFACTS/master.log
+    - docker logs $(docker-compose ps -q helloworldwrite) > $CIRCLE_ARTIFACTS/write.log
+    - docker logs $(docker-compose ps -q helloworldread) > $CIRCLE_ARTIFACTS/read.log

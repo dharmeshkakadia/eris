@@ -12,11 +12,12 @@ dependencies:
 
   override:
     - go get -d -v .
-    - go build -a -race -work -x -v
+    - "cd $GOPATH/src/github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME && git checkout $CIRCLE_BRANCH"
+    - go build -race -work -v
 
 test:
   override:
-    - go test -v ./... -race
+    - "cd ../../ && go test -v ./... -race"
 
 deployment:
   hub:

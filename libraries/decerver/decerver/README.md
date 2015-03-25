@@ -4,7 +4,7 @@
 
 This is the decerver repository.
 
-Note: We're transitioning to Docker right now, but we still need to add some script. For this reason, you need to either run an ipfs docker or just build the ipfs executable and run the daemon `ipfs daemon -writable` which will set up the web server.
+**Note**: We are transitioning the Eris Stack to heavily utilize Docker, but this process is still a work in progress. For this reason, you need to either run an ipfs docker or just build the ipfs executable and run the daemon `ipfs daemon -writable` which will set up the web server.
 
 ## What is it?
 
@@ -23,7 +23,6 @@ It is a module platform, such as for example the Netbeans platform. It allows yo
 In the decerver-modules repository, you can see how our modules are built. Legal markdown is by far the simplest one, and only has the basic module wrapper + a single API method. The others are more complex.
 
 Currently, modules has to be compiled together with the decerver in order to be used, which makes it look as if  Thelonious, IFPS and the other modules we've included are part of decerver itself, but they are not. IPFS, for example, is a stand alone library. We just put a module wrapper on it and gave it a javascript API. It has the same module wrapper as all the other modules we use. Decerver and dapp programmers could do this with any library they want, however, we currently do not support dynamic module loading. Once we get dynamic module loading in place (https://github.com/eris-ltd/decerver/issues/86), it will be possible to just switch modules during runtime, depending on what the currently loaded application needs. I would not recommend getting too deep into module development at this point, since the module API is going to change. Right now it's about application and not module making.
-
 
 ## What is it not?
 
@@ -51,7 +50,7 @@ The systems at the bottom represents various different modules that can be added
 
 ## An example decerver application
 
-Let us look at a simple example: the hello world dapp. The logic is deceptively simple: it has two functions. You can add files, and you can get the files that are added. Adding a file means adding that file to IPFS. That is what the back end script does when you order it to store a file - it calls on the IPFS module to store it. IPFS is a peer-to-peer, versioned file storage system. It works in a way similar to bittorrent (but also has git-like qualities and lots of other stuff that we don't make use of here). Every person that launches the hello world dapp is automatically hooked up to the IPFS dht, and is able to fetch files that other users add. Again, think bittorrent. If you host a file with bittorrent, other people can search for and get that file if they know the bittorrent hash. IPFS has hashes too. So how do you find the files? You need to know their hashes?
+Let us look at a simple example: the [hello world dapp](https://github.com/eris-ltd/hello-world-dapp). The logic is deceptively simple: it has two functions. You can add files, and you can get the files that are added. Adding a file means adding that file to IPFS. That is what the back end script does when you order it to store a file - it calls on the IPFS module to store it. IPFS is a peer-to-peer, versioned file storage system. It works in a way similar to bittorrent (but also has git-like qualities and lots of other stuff that we don't make use of here). Every person that launches the hello world dapp is automatically hooked up to the IPFS dht, and is able to fetch files that other users add. Again, think bittorrent. If you host a file with bittorrent, other people can search for and get that file if they know the bittorrent hash. IPFS has hashes too. So how do you find the files? You need to know their hashes?
 
 No. There is a smart contract on the thelonious blockchain that comes with the dapp. It takes file names and IPFS hashes and store them in a smart contract on the blockchain. Just like IPFS, the blockchain is distributed among all the nodes, although it uses a different system and runs on a different port. IPFS and thelonious are actually not aware of each other. Decerver, on the other hand, knows about both, and can communicate with both, which is how inter-op is made possible. That's pretty much what decerver is - a glue for all these different technologies that will make distributed application making easier.
 

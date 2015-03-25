@@ -1,0 +1,72 @@
+{
+	"lll": {
+		"url": "http://ps.erisindustries.com:8090/compile",
+		"path": "/usr/local/src/eris-cpp/build/lllc/lllc",
+		"net": true,
+		"extensions": [
+			"lll",
+			"def"
+		],
+		"regexes": [
+			"\\(include \"(.+?)\"\\)"
+		],
+		"replaces": [
+			[
+				"(include \"",
+				".lll\")"
+			]
+		],
+		"cmd": [
+			"/usr/local/src/eris-cpp/build/lllc/lllc",
+			"_"
+		]
+	},
+	"sol": {
+		"url": "http://ps.erisindustries.com:8090/compile",
+		"path": "/usr/local/src/eris-cpp/build/solc/solc",
+		"net": true,
+		"extensions": [
+			"sol"
+		],
+		"regexes": [
+			"\\(include \"(.+?)\"\\)"
+		],
+		"replaces": [
+			[
+				"(include \"",
+				".sol\")"
+			]
+		],
+		"cmd": [
+			"/usr/local/src/eris-cpp/build/solc/solc",
+			"_"
+		]
+	},
+	"se": {
+		"url": "http://ps.erisindustries.com:8090/compile",
+		"path": "/usr/local/bin/serpent",
+		"net": true,
+		"extensions": [
+			"se"
+		],
+		"regexes": [
+			"create\\(\"(.+?)\"\\)",
+			"create\\('(.+?)'\\)"
+		],
+		"replaces": [
+			[
+				"create(\"",
+				".se\")"
+			],
+			[
+				"create('",
+				".se')"
+			]
+		],
+		"cmd": [
+			"/usr/local/bin/serpent",
+			"compile",
+			"_"
+		]
+	}
+}

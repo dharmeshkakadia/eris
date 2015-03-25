@@ -2,7 +2,7 @@ package modules
 
 import (
 	"github.com/eris-ltd/decerver/interfaces/files"
-	"github.com/eris-ltd/modules/types"
+	"github.com/eris-ltd/thelonious/Godeps/_workspace/src/github.com/eris-ltd/modules/types"
 )
 
 type (
@@ -45,7 +45,7 @@ type (
 		Start() error
 		Shutdown() error
 	}
-	
+
 	// This is the functionality that decerver exports to modules
 	// when they register.
 	DecerverModuleApi interface {

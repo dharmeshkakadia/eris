@@ -1,4 +1,4 @@
-FROM node:0.12
+FROM node:0.10
 
 # Copy steps from -onbuild because we don't want to run as root.
 

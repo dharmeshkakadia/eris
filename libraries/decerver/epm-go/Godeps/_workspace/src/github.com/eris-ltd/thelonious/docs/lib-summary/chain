@@ -1,0 +1,133 @@
+A new ethereum creates:
+    - reactor
+    - blockPool
+    - txPool
+    - blockchain
+    - statemanager 
+
+    and starts:
+        - txPool
+
+ethereum.Start() starts
+    - peer server
+    - update loop (checks every minute if its uptodate)
+    - filterLoop (subscribe to newblocks and messages)
+
+/*
+    MINING
+*/
+
+Start Mining
+    - 4 channels
+        - react (subscribe newBlock, newTx:pre)
+        - pow
+        - powQuit (newBlock, newTx:pre)
+        - quit
+    - txs, block
+    - run listener over channels for
+        - quit
+        - block/tx
+        - default: mineNewBlock()
+
+mineNewBlock()
+    - get state manager
+    - make new block, update uncles, sort txs (by nonce)
+   *- stateManager.ProcessTransactions
+    - block.SetTxHash
+    - block.SetReceipts
+    - stateManager.AccumulateRewards
+    - block.State().Update()
+    - pow search
+    - if found:
+       *- statemanager.Process(block, false)
+        - broadcast
+
+/*
+    STATE_MANAGER  
+*/
+
+
+ProcessTransactions
+func (self *StateManager) ProcessTransactions(coinbase *ethstate.StateObject, state *ethstate.State, block, parent *Block, txs Transactions) (Receipts, Transactions, Transactions, error)
+    - for each tx
+        - get coinbase
+        - new state transition
+       *- TransitionState
+        - new tx post
+        - state.Update()
+        - return receipts, handled, unhandled, err
+            - unhandled only if gasLimit error
+
+Process(block, dontReact)
+   *- ApplyDiff(parentstate, parent, block)
+    - get tx sha
+    - validate block
+    - accumulate rewards
+    - state.Update()
+    - update total difficulty
+    - state.Sync()
+    - add block to chain and db
+    - if dontreact false, post new block, manifest.reset()
+    - broadcast block msg
+    - remove invalid states from tx pool
+
+ApplyDiff
+    - ProcessTransactions
+    - return receipts
+    - used to get txSha and validate against block.txSha
+
+
+/*
+    STATE_TRANSITION
+*/
+
+TransitionState
+    - preCheck: nonce, buyGas
+    - defer refundGas
+    - incr nonce
+    - tx gas
+    - tx-data gas
+    - if contract
+        - sub amount
+        - snapshot
+        - MakeStateObject(state, tx) - new state object, init code, state trie
+        - add amount
+    - else
+        - sub amount
+        - add amount
+        - snapshot
+    - manifest add message
+    - if contract
+        - Eval(msg, receiver.Init(), receiver, "init")
+    - else
+        - Eval(msg, receiver.Code, receiver, "code")
+    - if Eval fails, revert to snapshot
+
+Eval
+    - new env and callerClosure
+    - new vm
+    - callerClosure.Call(vm, st.tx.Data)
+    - Post Calls
+        -msg.Exec(addr, transactor)
+
+
+
+New Transactions
+
+QueueTransaction
+    - pushes tx onto pool.queueChan
+
+queueHandler
+    - tx <- pool.queueCHan
+        - get tx hash, check if already seen
+        - validate tx
+        - pool.addTransaction
+
+addTransaction
+    - add tx to back of pool
+    - broadcast tx to peers
+
+
+// Note the tx is not actually processed until block processing
+// TransitionState only called by ProcessTransactions
+// ProcessTransactions only called by miner and in ApplyDiff

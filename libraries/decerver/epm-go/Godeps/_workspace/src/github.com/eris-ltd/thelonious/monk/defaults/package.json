@@ -1,0 +1,38 @@
+{
+  "name": "Hello World",
+  "id" : "helloworld",
+  "app_icon": "img/decerver.png",
+  "version": "0.0.1",
+  "homepage": "https://erisindustries.com",
+  "author": {
+    "name": "Eris Industries, Ltd.",
+    "url": "https://erisindustries.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/eris-ltd/hello-world-dapp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/eris-ltd/hello-world-dapp/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/eris-ltd/hello-world-dapp/blob/master/LICENSE.txt"
+    }
+  ],
+  "module_dependencies": [
+		{
+			"name" : "monk",
+			"version" : "0.0.1",
+			"data" : {
+				  "peer_server_address": "92.243.15.73:30303",
+  				  "blockchain_id": "693186115fcd0306b14dff8787e0e05763c0c007e796f8aa64d4f6f4f2692563",
+                  "root_contract": "0x0"
+			}
+		}, {
+			"name" : "ipfs",
+			"version" : "0.0.1"
+		}
+	]
+}

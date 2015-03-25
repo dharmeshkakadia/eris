@@ -17,7 +17,7 @@ var regexCache = make(map[string]*regexp.Regexp)
 
 // Find all matches to the include regex
 // Replace filenames with hashes
-func (c *CompileClient) replaceIncludes(code []byte, dir string, includes map[string][]byte) ([]byte, error) {
+func (c *CompileClient) replaceIncludes(code []byte, dir string, includes map[string][]byte, includeNames map[string]string) ([]byte, error) {
 	// find includes, load those as well
 	regexPatterns := c.IncludeRegexes()
 	for i, regPattern := range regexPatterns {
@@ -34,7 +34,7 @@ func (c *CompileClient) replaceIncludes(code []byte, dir string, includes map[st
 		//  make sure to return hashes of includes so we can cache check them too
 		// do it recursively
 		code = r.ReplaceAllFunc(code, func(s []byte) []byte {
-			s, err := c.includeReplacer(r, i, s, dir, includes)
+			s, err := c.includeReplacer(r, i, s, dir, includes, includeNames)
 			if err != nil {
 				fmt.Println("ERR!:", err)
 				// panic (catch)
@@ -42,13 +42,14 @@ func (c *CompileClient) replaceIncludes(code []byte, dir string, includes map[st
 			return s
 		})
 	}
+
 	return code, nil
 }
 
 // read the included file, hash it; if we already have it, return include replacement
 // if we don't, run replaceIncludes on it (recursive)
 // modifies the "includes" map
-func (c *CompileClient) includeReplacer(r *regexp.Regexp, i int, s []byte, dir string, included map[string][]byte) ([]byte, error) {
+func (c *CompileClient) includeReplacer(r *regexp.Regexp, i int, s []byte, dir string, included map[string][]byte, includeNames map[string]string) ([]byte, error) {
 	m := r.FindSubmatch(s)
 	match := m[1]
 	// load the file
@@ -59,24 +60,30 @@ func (c *CompileClient) includeReplacer(r *regexp.Regexp, i int, s []byte, dir s
 		return nil, fmt.Errorf("Failed to read include file: %s", err.Error())
 	}
 
-	// compute hash
+	// take hash before replacing includes to see if we've already parsed this file
 	hash := sha256.Sum256(incl_code)
-	h := hex.EncodeToString(hash[:])
-	replaces := c.IncludeReplace(h, i)
-	ret := []byte(replaces)
-	// if we've already loaded this, return the replacement
-	// and move on
-	if _, ok := included[h]; ok {
+	hpre := hex.EncodeToString(hash[:])
+	if h, ok := includeNames[hpre]; ok{
+		replaces := c.IncludeReplace(h, i)
+		ret := []byte(replaces)
 		return ret, nil
 	}
 
 	// recursively replace the includes for this file
 	this_dir := path.Dir(p)
-	incl_code, err = c.replaceIncludes(incl_code, this_dir, included)
+	incl_code, err = c.replaceIncludes(incl_code, this_dir, included, includeNames)
 	if err != nil {
 		return nil, err
 	}
+
+	// compute hash
+	hash = sha256.Sum256(incl_code)
+	h := hex.EncodeToString(hash[:])
+
+	replaces := c.IncludeReplace(h, i)
+	ret := []byte(replaces)
 	included[h] = incl_code
+	includeNames[hpre] = h
 	return ret, nil
 }
 
@@ -119,7 +126,9 @@ func (c *CompileClient) cachedResponse(hash string) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	return NewResponse(b, nil), nil
+	f = path.Join(ClientCache, c.Ext(hash+"-abi"))
+	abi, _ := ioutil.ReadFile(f)
+	return NewResponse(b, string(abi), nil), nil
 }
 
 // cache a file to disk
@@ -131,6 +140,27 @@ func (c *CompileClient) cacheFile(b []byte, hash string) error {
 		}
 	}
 	return nil
+}
+
+// check cache for server
+func checkCache(hash []byte) (*Response, error) {
+	f := path.Join(ClientCache, hex.EncodeToString(hash))
+	if _, err := os.Stat(f); err == nil {
+		b, err := ioutil.ReadFile(f)
+		if err != nil {
+			return nil, err
+		}
+		f += "-abi"
+		abi, _ := ioutil.ReadFile(f)
+		return NewResponse(b, string(abi), nil), nil
+	}
+	return nil, fmt.Errorf("Not cached")
+}
+
+func cacheResult(hash, compiled []byte, docs string) {
+	f := path.Join(ClientCache, hex.EncodeToString(hash))
+	ioutil.WriteFile(f, compiled, 0600)
+	ioutil.WriteFile(f+"-abi", []byte(docs), 0600)
 }
 
 // Get language from filename extension

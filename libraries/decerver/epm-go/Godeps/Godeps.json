@@ -1,0 +1,108 @@
+{
+	"ImportPath": "github.com/eris-ltd/epm-go",
+	"GoVersion": "go1.4.1",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "code.google.com/p/go.crypto/ripemd160",
+			"Comment": "null-236",
+			"Rev": "69e2a90ed92d03812364aeb947b7068dc42e561e"
+		},
+		{
+			"ImportPath": "github.com/codegangsta/cli",
+			"Comment": "1.2.0-50-ga14c5b4",
+			"Rev": "a14c5b47c7efa4ff80cc42e1079a34b4756f2311"
+		},
+		{
+			"ImportPath": "github.com/codegangsta/inject",
+			"Comment": "v1.0-rc1-4-g4b81725",
+			"Rev": "4b8172520a03fa190f427bbd284db01b459bfce7"
+		},
+		{
+			"ImportPath": "github.com/daviddengcn/go-colortext",
+			"Rev": "b5c0891944c2f150ccc9d02aecf51b76c14c2948"
+		},
+		{
+			"ImportPath": "github.com/eris-ltd/decerver/interfaces/dapps",
+			"Comment": "v0.8-63-g3ee7aef",
+			"Rev": "3ee7aef816f9258e0ecc0e687de2f23a781724ae"
+		},
+		{
+			"ImportPath": "github.com/eris-ltd/eris-std-lib/go-tests",
+			"Rev": "f8a20d79836909f18aa969c7149aa339221662f4"
+		},
+		{
+			"ImportPath": "github.com/eris-ltd/go-ethereum",
+			"Comment": "v0.6.8-1318-gaa115b0",
+			"Rev": "aa115b0e05ba6b8f21792f52dde8cbacf1ce5229"
+		},
+		{
+			"ImportPath": "github.com/eris-ltd/lllc-server",
+			"Rev": "77f9b910c9c668d1db5028e40f815187d521e48e"
+		},
+		{
+			"ImportPath": "github.com/eris-ltd/modules/eth",
+			"Rev": "95baf515312539971c27d74b66c0cdc4417c4f48"
+		},
+		{
+			"ImportPath": "github.com/eris-ltd/modules/genblock",
+			"Rev": "95baf515312539971c27d74b66c0cdc4417c4f48"
+		},
+		{
+			"ImportPath": "github.com/eris-ltd/modules/monkrpc",
+			"Rev": "95baf515312539971c27d74b66c0cdc4417c4f48"
+		},
+		{
+			"ImportPath": "github.com/eris-ltd/modules/monkutils",
+			"Rev": "95baf515312539971c27d74b66c0cdc4417c4f48"
+		},
+		{
+			"ImportPath": "github.com/eris-ltd/modules/types",
+			"Rev": "95baf515312539971c27d74b66c0cdc4417c4f48"
+		},
+		{
+			"ImportPath": "github.com/eris-ltd/thelonious",
+			"Comment": "v0.8-62-g30ed9c5",
+			"Rev": "30ed9c5f5d6d26d1692ab073b09d37bab3d9bff0"
+		},
+		{
+			"ImportPath": "github.com/go-martini/martini",
+			"Comment": "v1.0-85-gbbd489b",
+			"Rev": "bbd489b35fd7eac9aaf442e5671ab21cdd972926"
+		},
+		{
+			"ImportPath": "github.com/jackpal/go-nat-pmp",
+			"Rev": "a45aa3d54aef73b504e15eb71bea0e5565b5e6e1"
+		},
+		{
+			"ImportPath": "github.com/kardianos/osext",
+			"Rev": "ccfcd0245381f0c94c68f50626665eed3c6b726a"
+		},
+		{
+			"ImportPath": "github.com/obscuren/secp256k1-go",
+			"Rev": "88d689c5032b23994016f6206d7ac1340ec6974e"
+		},
+		{
+			"ImportPath": "github.com/obscuren/sha3",
+			"Rev": "4ae244389bb9c339b4df6c3930a15396a1e801d7"
+		},
+		{
+			"ImportPath": "github.com/rakyll/globalconf",
+			"Rev": "415abc325023f1a00cd2d9fa512e0e71745791a2"
+		},
+		{
+			"ImportPath": "github.com/rakyll/goini",
+			"Rev": "907cca0f578a5316fb864ec6992dc3d9730ec58c"
+		},
+		{
+			"ImportPath": "github.com/syndtr/goleveldb/leveldb",
+			"Rev": "63c9e642efad852f49e20a6f90194cae112fd2ac"
+		},
+		{
+			"ImportPath": "github.com/syndtr/gosnappy/snappy",
+			"Rev": "ce8acff4829e0c2458a67ead32390ac0a381c862"
+		}
+	]
+}

@@ -1,0 +1,19 @@
+type Trie struct {
+    mut      sync.RWMutex
+    prevRoot interface{}
+    Root     interface{}
+    //db   Database
+    cache *Cache
+}
+
+Update
+    - root := UpdateState
+
+UpdateState
+    - InsertState(node, nibbles, value)
+
+InsertState
+    - trie logic
+    - Put(newNode)
+        - cache.Put
+

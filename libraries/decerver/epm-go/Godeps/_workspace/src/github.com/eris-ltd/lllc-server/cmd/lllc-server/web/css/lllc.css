@@ -1,0 +1,156 @@
+/* Fonts */
+@font-face {
+	font-family: 'Montserrat';
+	src: url('../../fonts/montserrat-regular-webfont.eot');
+	src: url('../../fonts/montserrat-regular-webfont.eot?#iefix')
+		format('embedded-opentype'),
+		url('../../fonts/montserrat-regular-webfont.woff') format('woff'),
+		url('../../fonts/montserrat-regular-webfont.ttf') format('truetype'),
+		url('../../fonts/montserrat-regular-webfont.svg#montserratregular')
+		format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+	@font-face {
+		font-family: 'Montserrat';
+		src: url('../../fonts/montserrat-regular-webfont.svg') format('svg');
+	}
+	select {
+		font-family: Arial, Helvetica, sans-serif;
+	}
+}
+/* Base */
+html {
+	overflow-y: scroll;
+	zoom: 100%;
+}
+
+body {
+	background: #f3f3f3;
+	font-family: "Montserrat";
+	color: #333333 !important;
+	
+}
+
+.row{
+    margin-left:0px;
+    margin-right:0px;
+}
+
+#wrapper {
+    height: 100%
+}
+
+/*********************************/
+/*          Enscroll             */
+/*********************************/
+.trackV {
+    width: 10px;
+    background: rgba(0, 0, 0, 0);
+    margin-right: 2px;
+    border-radius: 10px;
+    -webkit-transition: background 250ms linear;
+    transition: background 250ms linear;
+}
+
+.trackV:hover,
+.trackV.dragging {
+    background: #d9d9d9; /* Browsers without rgba support */
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.handleV {
+    width: 7px;
+    right: 0;
+    background: #999;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 7px;
+    -webkit-transition: width 250ms;
+    transition: width 250ms;
+}
+
+.trackV:hover .handleV,
+.trackV.dragging .handleV {
+    width: 10px;
+}
+
+.trackH {
+    height: 10px;
+    width: 100%;
+    background: rgba(0, 0, 0, 0);
+    margin-top: 2px;
+    border-radius: 10px;
+    -webkit-transition: background 250ms linear;
+    transition: background 250ms linear;
+}
+
+.trackH:hover,
+.trackH.dragging {
+    background: #d9d9d9; /* Browsers without rgba support */
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.handleH {
+    height: 7px;
+    right: 0;
+    background: #999;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 7px;
+    -webkit-transition: height 250ms;
+    transition: height 250ms;
+}
+
+.trackH:hover .handleH,
+.trackH.dragging .handleH {
+    height: 10px;
+}
+
+.ut_list {
+    max-height: 200px;
+    overflow: hidden;
+    overflow-y: auto;
+    border-style: solid;
+    border-color: #aaa;
+    border-radius: 4px;
+    border-width: 1px;
+}
+
+/*********************************/
+/*           Buttons             */
+/*********************************/
+
+.nonAct:focus {
+	background-color: #fff;
+}
+
+.nonAct:hover {
+	background-color: #eee;
+}
+
+#FileOpenBox {
+	opacity="0";
+	filter: opacity(0);
+	width: 0px;
+	height: 0px;
+}
+
+.CodeMirror-fullscreen {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  height: auto;
+  z-index: 9;
+}
+
+#CompilerOutput {
+    overflow: auto;
+    width: 100%;
+    height: 100px;
+    padding: 0 5px;
+    border: 1px solid #b7b7b7;
+    color: #eee;
+    background: #223;
+    font-weight: bold;
+    font-size: 120%;
+}

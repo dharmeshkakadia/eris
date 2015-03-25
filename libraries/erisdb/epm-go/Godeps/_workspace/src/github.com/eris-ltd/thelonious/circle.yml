@@ -1,0 +1,11 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  override:
+    - sudo pip install -U fig
+
+test:
+  override:
+    - fig up --no-color --no-recreate > $CIRCLE_ARTIFACTS/output.log

@@ -1,0 +1,7 @@
+set:
+    {{A}} => hello
+transact:
+    {{A}} => 0x15 0x12
+modify-deploy:
+    a.lll => {{C}}
+    (def 'dougie 0x1313) => (def 'dougie {{A}})

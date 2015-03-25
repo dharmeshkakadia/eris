@@ -1,0 +1,6 @@
+{
+	(include "support2.lll")
+	(def 'abc 0x4)
+	[[0x3]]abc
+	[[0x5]]def
+}

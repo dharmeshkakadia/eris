@@ -2,7 +2,7 @@ module.exports = {
   "Hello World" : function (browser) {
     browser
       .useXpath()
-      .url('http://helloworld:3000/helloworld/')
+      .url('http://helloworldwrite:3000/helloworld/')
       .waitForElementVisible('//input[@id="filenameAdd"]', 10000)
 
       .execute(function () {
@@ -28,6 +28,9 @@ module.exports = {
       .setValue('//textarea[@id="input"]', "Hello, world!")
       .click('(//button)[1]')
       .waitForElementPresent('//div[@id="alertPresent"]', 1000)
+
+      .url('http://helloworldread:3000/helloworld/')
+      .waitForElementVisible('//input[@id="filenameGet"]', 10000)
       .setValue('//input[@id="filenameGet"]', "greeting")
       .click('(//button)[2]')
       .assert.value('//textarea[@id="output"]', "Hello, world!")

@@ -6,8 +6,10 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/eris-ltd/epm-go/utils"
-	"github.com/go-martini/martini"
+	"github.com/eris-ltd/lllc-server/Godeps/_workspace/src/github.com/ebuchman/go-shell-pipes"
+	"github.com/eris-ltd/lllc-server/Godeps/_workspace/src/github.com/eris-ltd/epm-go/utils"
+	"github.com/eris-ltd/lllc-server/Godeps/_workspace/src/github.com/go-martini/martini"
+	"github.com/eris-ltd/lllc-server/Godeps/_workspace/src/github.com/martini-contrib/gorelic"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -17,6 +19,12 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+)
+
+var (
+	//"" = abi.ABI{}
+	NEWRELIC_KEY = os.Getenv("NEWRELIC_KEY")
+	NEWRELIC_APP = os.Getenv("NEWRELIC_APP")
 )
 
 // must have compiler installed!
@@ -51,12 +59,13 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var code []byte
+	var abi string
 	if req.Literal {
-		code, err = CompileLiteral(req.Source, req.Language)
+		code, abi, err = CompileLiteral(req.Source, req.Language)
 	} else {
-		code, err = Compile(req.Source)
+		code, abi, err = Compile(req.Source)
 	}
-	resp := NewProxyResponse(code, err)
+	resp := NewProxyResponse(code, abi, err)
 
 	respJ, err := json.Marshal(resp)
 	if err != nil {
@@ -123,42 +132,77 @@ func compileServerCore(req *Request) *Response {
 
 	c := req.Script
 	if c == nil || len(c) == 0 {
-		name = "NULLCACHED"
-	} else {
-		// take sha2 of request object to get tmp filename
-		hash := sha256.Sum256(c)
-		filename := path.Join(ServerCache, compiler.Ext(hex.EncodeToString(hash[:])))
-		name = filename
+		return NewResponse(nil, "", fmt.Errorf("No script provided"))
+	}
 
-		// lllc requires a file to read
-		// check if filename already exists. if not, write
-		if _, err := os.Stat(filename); err != nil {
-			ioutil.WriteFile(filename, c, 0644)
-		}
+	// take sha2 of request object to get tmp filename
+	hash := sha256.Sum256(c)
+	filename := path.Join(ServerCache, compiler.Ext(hex.EncodeToString(hash[:])))
+	name = filename
+
+	maybeCached := true
+
+	// lllc requires a file to read
+	// check if filename already exists. if not, write
+	if _, err := os.Stat(filename); err != nil {
+		ioutil.WriteFile(filename, c, 0644)
+		logger.Debugln(filename, "does not exist. Writing")
+		maybeCached = false
 	}
 
 	// loop through includes, also save to drive
 	for k, v := range req.Includes {
 		filename := path.Join(ServerCache, compiler.Ext(k))
 		if _, err := os.Stat(filename); err != nil {
-			ioutil.WriteFile(filename, v, 0644)
+			maybeCached = false
+		}
+		ioutil.WriteFile(filename, v, 0644)
+	}
+
+	// check cache
+	if maybeCached {
+		r, err := checkCache(hash[:])
+		if err == nil {
+			return r
 		}
 	}
+
 	var resp *Response
 	//compile scripts, return bytecode and error
-	if name == "NULLCACHED" {
+	compiled, docs, err := CompileWrapper(name, lang)
 
-		resp = NewResponse([]byte("NULLCACHED"), nil)
-	} else {
-		compiled, err := CompileWrapper(name, lang)
-		resp = NewResponse(compiled, err)
-	}
+	// cache
+	cacheResult(hash[:], compiled, docs)
+
+	resp = NewResponse(compiled, docs, err)
 
 	return resp
 }
 
+func commandWrapper_(prgrm string, args []string) (string, error) {
+	a := fmt.Sprint(args)
+	logger.Infoln(fmt.Sprintf("Running command %s %s ", prgrm, a))
+	cmd := exec.Command(prgrm, args...)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err := cmd.Run()
+	if err != nil {
+		return "", err
+	}
+	outstr := out.String()
+	// get rid of new lines at the end
+	outstr = strings.TrimSpace(outstr)
+	return outstr, nil
+}
+
+func commandWrapper(tokens ...string) (string, error) {
+	s, err := pipes.RunStrings(tokens...)
+	s = strings.TrimSpace(s)
+	return s, err
+}
+
 // wrapper to cli
-func CompileWrapper(filename string, lang string) ([]byte, error) {
+func CompileWrapper(filename string, lang string) ([]byte, string, error) {
 	// we need to be in the same dir as the files for sake of includes
 	cur, _ := os.Getwd()
 	dir := path.Dir(filename)
@@ -166,37 +210,48 @@ func CompileWrapper(filename string, lang string) ([]byte, error) {
 	filename = path.Base(filename)
 
 	if _, ok := Languages[lang]; !ok {
-		return nil, UnknownLang(lang)
+		return nil, "", UnknownLang(lang)
 	}
 
 	os.Chdir(dir)
-	prgrm, args := Languages[lang].Cmd(filename)
-	cmd := exec.Command(prgrm, args...)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	err := cmd.Run()
+	defer func() {
+		os.Chdir(cur)
+	}()
+
+	tokens := Languages[lang].Cmd(filename)
+	hexCode, err := commandWrapper(tokens...)
 	if err != nil {
 		logger.Errorln("Couldn't compile!!", err)
-		os.Chdir(cur)
-		return nil, err
+		return nil, "", err
 	}
-	os.Chdir(cur)
 
-	outstr := out.String()
-	// get rid of new lines at the end
-	outstr = strings.TrimSpace(outstr) //"\n")
-
-	b, err := hex.DecodeString(outstr)
+	tokens = Languages[lang].Abi(filename)
+	jsonAbi, err := commandWrapper(tokens...)
 	if err != nil {
-		return nil, err
+		logger.Errorln("Couldn't produce abi doc!!", err)
+		// we swallow this error, but maybe we shouldnt...
 	}
-	return b, nil
+
+	b, err := hex.DecodeString(hexCode)
+	if err != nil {
+
+		return nil, "", err
+	}
+
+	return b, jsonAbi, nil
 }
 
 // Start the compile server
 func StartServer(addr string) {
 	//martini.Env = martini.Prod
 	srv := martini.Classic()
+
+	// new relic for error reporting
+	if NEWRELIC_KEY != "" {
+		gorelic.InitNewrelicAgent(NEWRELIC_KEY, NEWRELIC_APP, true)
+		srv.Use(gorelic.Handler)
+	}
+
 	// Static files
 	srv.Use(martini.Static("./web"))
 

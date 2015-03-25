@@ -3,7 +3,7 @@ package lllcserver
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/eris-ltd/epm-go/utils"
+	"github.com/eris-ltd/lllc-server/Godeps/_workspace/src/github.com/eris-ltd/epm-go/utils"
 	"io/ioutil"
 	"os"
 	"path"
@@ -25,6 +25,7 @@ type LangConfig struct {
 	IncludeRegexes  []string   `json:"regexes"`
 	IncludeReplaces [][]string `json:"replaces"`
 	CompileCmd      []string   `json:"cmd"`
+	AbiCmd          []string   `json:"abi"`
 }
 
 // Append the language extension to the filename
@@ -33,9 +34,23 @@ func (l LangConfig) Ext(h string) string {
 }
 
 // Fill in the filename and return the command line args
-func (l LangConfig) Cmd(file string) (prgrm string, args []string) {
-	prgrm = l.CompileCmd[0]
-	for _, s := range l.CompileCmd[1:] {
+func (l LangConfig) Cmd(file string) (args []string) {
+	for _, s := range l.CompileCmd {
+		if s == "_" {
+			args = append(args, file)
+		} else {
+			args = append(args, s)
+		}
+	}
+	return
+}
+
+func (l LangConfig) Abi(file string) (args []string) {
+	if len(l.AbiCmd) < 2 {
+		return
+	}
+
+	for _, s := range l.AbiCmd {
 		if s == "_" {
 			args = append(args, file)
 		} else {
@@ -49,7 +64,7 @@ func (l LangConfig) Cmd(file string) (prgrm string, args []string) {
 var Languages = map[string]LangConfig{
 	"lll": LangConfig{
 		URL:        DefaultUrl,
-		Path:       path.Join(homeDir(), "cpp-ethereum/build/lllc/lllc"),
+		Path:       path.Join(homeDir(), "eric-cpp/build/lllc/lllc"),
 		Net:        true,
 		Extensions: []string{"lll", "def"},
 		IncludeRegexes: []string{
@@ -59,7 +74,7 @@ var Languages = map[string]LangConfig{
 			[]string{`(include "`, `.lll")`},
 		},
 		CompileCmd: []string{
-			path.Join(homeDir(), "cpp-ethereum/build/lllc/lllc"),
+			path.Join(homeDir(), "eris-cpp/build/lllc/lllc"),
 			"_",
 		},
 	},
@@ -83,6 +98,33 @@ var Languages = map[string]LangConfig{
 			"/usr/local/bin/serpent",
 			"compile",
 			"_",
+		},
+		AbiCmd: []string{
+			"/usr/local/bin/serpent",
+			"mk_full_signature",
+			"_",
+		},
+	},
+	"sol": LangConfig{
+		URL:             DefaultUrl,
+		Path:            path.Join(homeDir(), "cpp-ethereum/build/solc/solc"),
+		Net:             true,
+		Extensions:      []string{"sol"},
+		IncludeRegexes:  []string{},
+		IncludeReplaces: [][]string{},
+		CompileCmd: []string{
+			path.Join(homeDir(), "cpp-ethereum/build/solc/solc"),
+			"_",
+			"--binary", "stdout", "|",
+			"grep", "[0-9a-fA-F]", "|",
+			"sort", "-rn", "|",
+			"awk", "{print $1; exit}",
+		},
+		AbiCmd: []string{
+			path.Join(homeDir(), "cpp-ethereum/build/solc/solc"),
+			"_",
+			"--json-abi", "stdout", "|",
+			"awk", "NR >= 4",
 		},
 	},
 }

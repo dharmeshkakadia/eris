@@ -1,0 +1,22 @@
+{
+
+    (include "../defs/single.def")
+    (include "../defs/stdarray.def")
+    (include "../defs/stdll.def")
+
+    ; test single
+    (singleInit "mySingle" 0 0 0 0x543)
+    
+;   ; test array
+    (arrayInit "myArray" 0 0 0 8)
+    (arraySetE "myArray" 2 0x23)
+    (arraySetE "myArray" 5 0x53)
+    (arraySetE "myArray" 6 0x63)
+
+    ; test linked list
+    (llInit "myLL" "none" "none" "none")
+    (llAddLink "myLL" "balls" 0x6)
+    (llAddLink "myLL" "paws" 0x7)
+    ;(llAddLink "myLL" "monkeyturd" 0x19)
+
+}

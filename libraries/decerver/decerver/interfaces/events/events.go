@@ -5,7 +5,7 @@ package events
 // it implements the Subscriber interface and pass it to the event system.
 import (
 	"time"
-	"github.com/eris-ltd/modules/types"
+	"github.com/eris-ltd/thelonious/Godeps/_workspace/src/github.com/eris-ltd/modules/types"
 )
 
 // This interface allow modules to subscribe to and publish events.

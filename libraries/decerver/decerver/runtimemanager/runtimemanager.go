@@ -7,7 +7,7 @@ import (
 	"github.com/eris-ltd/decerver/interfaces/files"
 	"github.com/eris-ltd/decerver/interfaces/logging"
 	"github.com/eris-ltd/decerver/interfaces/scripting"
-	mtypes "github.com/eris-ltd/modules/types"
+	mtypes "github.com/eris-ltd/thelonious/Godeps/_workspace/src/github.com/eris-ltd/modules/types"
 	"github.com/robertkrimen/otto"
 	"io/ioutil"
 	"log"
@@ -133,10 +133,10 @@ func (rt *Runtime) Id() string {
 
 // TODO add an interrupt channel.
 func (rt *Runtime) Init(name string) {
-	
+
 	// Bind the runtime id (it's name)
 	rt.vm.Set("RuntimeId", name)
-	
+
 	// Bind an event subscribe function to otto
 	rt.vm.Set("events_subscribe", func(call otto.FunctionCall) otto.Value {
 	    // TODO Error checking
@@ -154,30 +154,30 @@ func (rt *Runtime) Init(name string) {
 	    rt.ep.Unsubscribe(id)
 	    return otto.Value{}
 	})
-	
+
 	// Bind an event unsubscribe function to otto
 	rt.vm.Set("WriteTempFile", func(call otto.FunctionCall) otto.Value {
 	    filename, err := call.Argument(0).ToString()
 	    if err != nil {
 	    	logger.Println("File not written: " + err.Error())
-	    	return otto.FalseValue()	
+	    	return otto.FalseValue()
 	    }
 	    data, err1 := call.Argument(1).ToString()
 	    if err1 != nil {
 	    	logger.Println("File not written: " + err1.Error())
-	    	return otto.FalseValue()	
+	    	return otto.FalseValue()
 	    }
 	    err2 := rt.fio.WriteDappTempFile(rt.name,filename,[]byte(data))
 	    if err2 != nil {
 	    	logger.Println("File not written: " + err2.Error())
-	    	return otto.FalseValue()	
+	    	return otto.FalseValue()
 	    }
 		fPath := path.Join(rt.fio.Tempfiles(),rt.name,filename)
-		ret, _ := otto.ToValue(fPath)  
-		return ret 
+		ret, _ := otto.ToValue(fPath)
+		return ret
 
 	})
-	
+
 	// Bind an event unsubscribe function to otto
 	rt.vm.Set("ReadTempFile", func(call otto.FunctionCall) otto.Value {
 	    filename, err := call.Argument(0).ToString()
@@ -195,7 +195,7 @@ func (rt *Runtime) Init(name string) {
 	    ret, _ := otto.ToValue(string(bts))
 	    return ret
 	})
-	
+
 	// Bind all the defaults.
 	BindDefaults(rt)
 }

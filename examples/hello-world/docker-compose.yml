@@ -1,0 +1,84 @@
+compilers:
+  image: eris/compilers:latest
+
+ipfs:
+  image: eris/ipfs:latest
+
+  ports:
+    - "4001:4001"
+    - "8080:8080"
+
+# Run a blockchain only on the master.
+helloworldmaster:
+  image: eris/erisdb:latest
+
+  expose:
+   - "15254"
+   - "15256"
+
+  environment:
+   - MASTER=true
+   - SERVE_GBLOCK=true
+   - FETCH_PORT=15256
+
+# Create a Hello World instance for writing data.
+helloworldwrite:
+  build: .
+
+  links:
+   - compilers
+   - ipfs
+   - helloworldmaster
+
+  expose:
+   - "15254"
+
+  ports:
+   # for debugging
+   - "3000:3000"
+
+  environment:
+   - CONTAINERS=true
+
+# Create a Hello World instance for reading data.
+helloworldread:
+  build: .
+
+  links:
+   - compilers
+   - ipfs
+   - helloworldmaster
+   - helloworldwrite
+
+  expose:
+   - "15254"
+
+  ports:
+   # for debugging
+   - "3001:3000"
+
+  environment:
+   - ROOT_CONTRACT
+   - CONTAINERS=true
+
+seleniumhub:
+  image: selenium/hub:latest
+  expose:
+   - "4444"
+
+seleniumnode:
+  image: selenium/node-chrome:latest
+  # image: selenium/node-chrome-debug:latest
+  links:
+   - seleniumhub:hub
+   - helloworldwrite
+   - helloworldread
+
+  # Attach VNC to this port for debugging.  The password is 'secret'.
+  ports:
+   - "5900:5900"
+
+helloworldtest:
+  build: test
+  links:
+   - seleniumhub:selenium

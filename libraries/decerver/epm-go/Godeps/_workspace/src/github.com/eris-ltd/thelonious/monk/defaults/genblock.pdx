@@ -1,0 +1,19 @@
+deploy:
+    ./Genesis DOUG/gendoug-v2.lll => {{DOUG}}
+
+transact:
+    {{DOUG}} => "setvar" "consensus" "robin"
+transact:
+    {{DOUG}} => "setvar" "difficulty" 15
+transact:
+    {{DOUG}} => "setvar" "public:mine" 0
+transact:
+    {{DOUG}} => "setvar" "public:tx" 0
+transact:
+    {{DOUG}} => "setvar" "public:create" 0
+
+endow:
+    0xbbbd0256041f7aed3ce278c56ee61492de96d001 => 123456765432123456780987654
+
+
+

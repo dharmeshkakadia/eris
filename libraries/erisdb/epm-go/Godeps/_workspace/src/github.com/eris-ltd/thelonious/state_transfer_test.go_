@@ -1,0 +1,187 @@
+package thelonious
+
+import (
+	"bytes"
+	"fmt"
+	"github.com/eris-ltd/thelonious/monkchain"
+	"github.com/eris-ltd/thelonious/monkcrypto"
+	"github.com/eris-ltd/thelonious/monkdb"
+	"github.com/eris-ltd/thelonious/monkdoug"
+	"github.com/eris-ltd/thelonious/monkstate"
+	"github.com/eris-ltd/thelonious/monktrie"
+	"github.com/eris-ltd/thelonious/monkutil"
+
+	"math/big"
+	"testing"
+)
+
+var DB = []*monkdb.MemDatabase{}
+
+func initDB() {
+	monkutil.ReadConfig(".ethtest", "/tmp/ethtest", "")
+	// we need two databases, since we need two chain managers
+	for i := 0; i < 2; i++ {
+		db, _ := monkdb.NewMemDatabase()
+		DB = append(DB, db)
+	}
+	monkutil.Config.Db = DB[0]
+}
+func setDB(i int) {
+	monkutil.Config.Db = DB[i]
+}
+
+type fDoug struct {
+	g    *monkdoug.GenesisConfig
+	addr []byte
+}
+
+// Populate the state
+func (d *fDoug) DeploySimple(block *monkchain.Block) ([]byte, error) {
+	for _, acct := range [][]string{
+		[]string{"abc123", "9876"},
+		[]string{"321cba", "1234"},
+	} {
+		account := block.State().GetAccount(monkutil.Hex2Bytes(acct[0]))
+		account.Balance = monkutil.Big(acct[1])
+		block.State().UpdateStateObject(account)
+	}
+	block.State().Update()
+	block.State().Sync()
+	return nil, nil
+}
+
+// Populate the state
+func (d *fDoug) DeployAdvanced(block *monkchain.Block) ([]byte, error) {
+	g := monkdoug.LoadGenesis("monk/defaults/genesis-advanced.json")
+	d.g = g
+	d.addr = []byte(g.Address)
+	g.DougPath = "Genesis DOUG/gendoug-v2.lll"
+	return g.Deploy(block)
+}
+
+func (d *fDoug) Deploy(block *monkchain.Block) ([]byte, error) {
+	//return d.DeploySimple(block)
+	return d.DeployAdvanced(block)
+}
+
+func (d *fDoug) Doug() []byte { return d.addr }
+func (d *fDoug) ValidateChainID(chainId []byte, genBlock *monkchain.Block) error {
+	return nil
+}
+
+func (d *fDoug) Participate(coinbase []byte, parent *monkchain.Block) bool              { return false }
+func (d *fDoug) Difficulty(block, parent *monkchain.Block) *big.Int                     { return nil }
+func (d *fDoug) ValidatePerm(addr []byte, role string, state *monkstate.State) error    { return nil }
+func (d *fDoug) ValidateBlock(block *monkchain.Block, bc *monkchain.ChainManager) error { return nil }
+func (d *fDoug) ValidateTx(tx *monkchain.Transaction, state *monkstate.State) error     { return nil }
+func (d *fDoug) CheckPoint(proposed []byte, bc *monkchain.ChainManager) bool            { return false }
+
+func updateTrieTest(tr *monktrie.Trie, data *monkutil.Value) {
+	for i := 0; i < data.Len(); i++ {
+		l := data.Get(i)
+		//fmt.Println(i, l, l.Get(0).Bytes())
+		tr.Update(string(l.Get(0).Bytes()), string(l.Get(1).Bytes()))
+	}
+	tr.Sync()
+}
+
+func updateStateTest(state *monkstate.State, data *monkutil.Value) {
+	for i := 0; i < data.Len(); i++ {
+		l := data.Get(i)
+		k := l.Get(0).Bytes()
+		v := l.Get(1).Bytes()
+		state.Trie.Update(string(k), string(v))
+		// this value is hash of a stateobject
+		getStateObjectTest(state, k, v)
+	}
+	state.Update()
+	state.Sync()
+}
+
+func getStateObjectTest(state *monkstate.State, k []byte, v []byte) {
+	// state obejct may have a trie hash, but our db
+	// has none of the entries yet
+	//	fmt.Println(k, v)
+	setDB(0)
+	stateObj := monkstate.NewStateObjectFromBytes(k, v)
+	tr := stateObj.State.Trie
+
+	// get the elements of this stabe object's trie
+	response := serializeTrie(tr)
+	data := monkutil.NewValue(response)
+
+	// apply to new trie
+	setDB(1)
+	tr2 := monktrie.New(DB[1], "")
+	updateTrieTest(tr2, data)
+	fmt.Println("sub tries!")
+	fmt.Println(tr.Root)
+	fmt.Println(tr2.Root)
+
+	stateObj.State.Trie = tr2
+	state.UpdateStateObject(stateObj)
+}
+
+// Dead simple copy (key, value) pairs of a trie
+func TestSerializeTrie(t *testing.T) {
+	initDB()
+	cman := monkchain.NewChainManager(&fDoug{})
+
+	trA := cman.CurrentBlock().State().Trie
+	r := trA.Root.([]byte)
+	tr := monktrie.New(DB[0], r)
+	response := serializeTrie(tr)
+	for _, r := range response {
+		fmt.Println(r)
+	}
+	data := monkutil.NewValue(response)
+
+	setDB(1)
+	tr2 := monktrie.New(DB[1], "")
+	updateTrieTest(tr2, data)
+
+	response = serializeTrie(tr2)
+
+	fmt.Println(tr.Root)
+	fmt.Println(tr2.Root)
+	if bytes.Compare(tr.Root.([]byte), tr2.Root.([]byte)) != 0 {
+		t.Fatal(fmt.Errorf("different roots!"))
+	}
+}
+
+func TestSerializeState(t *testing.T) {
+	initDB()
+	dougie := &fDoug{}
+	setDB(0)
+	keys := monkcrypto.GenerateNewKeyPair()
+	cman := monkchain.NewChainManager(dougie)
+	state := cman.CurrentBlock().State()
+	block1 := monkchain.BlockFromState(state)
+	// serialize the state trie
+	tr := state.Trie
+	response := serializeTrie(tr)
+
+	// copy just the state trie
+	setDB(1)
+	tr2 := monktrie.New(DB[1], "")
+	state2 := monkstate.New(tr2)
+	updateStateTest(state2, monkutil.NewValue(response))
+	block2 := monkchain.BlockFromState(state2)
+
+	// run a state transition
+	setDB(0)
+	transition(dougie, keys, block1)
+	setDB(1)
+	transition(dougie, keys, block2)
+
+	if bytes.Compare(block1.State().Trie.Root.([]byte), block2.State().Trie.Root.([]byte)) != 0 {
+		t.Fatal(fmt.Errorf("different roots!"))
+	}
+
+}
+
+func transition(dougie *fDoug, keys *monkcrypto.KeyPair, block *monkchain.Block) {
+	monkdoug.SetValue(dougie.Doug(), []string{"initvar", "blankets", "single", "honeycomb"}, keys, block)
+	block.State().Update()
+	block.State().Sync()
+}

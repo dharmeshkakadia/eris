@@ -1,0 +1,42 @@
+{
+    "address":"0000000000THISISDOUG",
+    "no-gendoug":true,
+    "doug":"Genesis DOUG/gendoug-v2.lll",
+    "model":"std",
+    "consensus":"", 
+    "difficulty":17,
+    "public:mine":0,
+    "public:create":0,
+    "public:tx":0,
+    "maxgastx":"0xfffffffffffffffffffffffff",
+    "blocktime":5,
+    "accounts":
+        [
+            {
+                "address":"bbbd0256041f7aed3ce278c56ee61492de96d001",
+                "name":"MrMinerMcgee",
+                "balance":"12345678909876543212345678",
+                "permissions":
+                    {
+                        "transact":1,
+                        "mine":1,
+                        "create":1
+                    },
+                "stake":5
+            },
+            {
+                "address":"b9398794cafb108622b07d9a01ecbed3857592d5",
+                "name":"ThisAsshole",
+                "balance":"12345678909876543212345678",
+                "permissions":
+                    {
+                        "transact":1,
+                        "mine":1,
+                        "create":1
+                    },
+                "stake":3
+            }
+        ]
+}
+
+

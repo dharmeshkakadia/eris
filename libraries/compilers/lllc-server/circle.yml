@@ -1,0 +1,15 @@
+machine:
+  services:
+    - docker
+
+test:
+  override:
+    - docker build -t eris/compilers:unstable .
+    - "docker run -d --name compiler eris/compilers:unstable && sleep 5 && docker kill compiler"
+
+deployment:
+  hub:
+    branch: master
+    commands:
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker push eris/compilers:unstable

@@ -1,3 +1,5 @@
+[![Circle CI](https://circleci.com/gh/eris-ltd/lllc-server.svg?style=svg)](https://circleci.com/gh/eris-ltd/lllc-server)
+
 lllc-server
 ===========
 
@@ -5,11 +7,13 @@ The Lovely Little Language Compiler: A web server and client for compiling ether
 
 # Features
 
-- language agnostic (currently supports lll, serpent; solidity coming soon)
+- language agnostic (currently supports lll, serpent2.0, solidity)
+- returns ethereum abis (for serpent and solidity)
 - handles included files recursively with regex matching
 - client side and server side caching
 - configuration file with per-language options
 - local proxy server for compiling from languages other than go
+- easily extensible to new languages
 
 Eris Industries' own public facing LLLC-server (at http://lllc.erisindustries.com) is hardcoded into the source,
 so you can start compiling ethereum language right out of the box with no extra tools required.
@@ -25,7 +29,7 @@ see the config file at `~/.decerver/languages/config.json`.
 bytecode, err := lllcserver.Compile("mycontract.lll")
 ```
 
-The language is determined automatically from extension. If you want to compile literal expressions, 
+The language is determined automatically from extension. If you want to compile literal expressions,
 you must specify the language explicitly, ie.
 
 ```
@@ -37,12 +41,12 @@ bytecode, err := lllcserver.CompileLiteral("[0x5](+ 4 @0x3)", "lll")
 #### Compile Remotely
 
 ```
-lllc-server compile --host http://lllc.erisindustries.com:8090 test.lll 
+lllc-server compile --host http://lllc.erisindustries.com:8090 test.lll
 ```
 
 Leave out the `--host` flag to default to the url in the config.
 
-#### Compile Locally 
+#### Compile Locally
 Make sure you have the appropriate compiler installed and configured (you may need to adjust the `cmd` field in the config file)
 
 ```
@@ -110,9 +114,10 @@ Installing the actual compilers is a bit more involved. You need a bunch of cpp 
 
 See [ethereum wiki](https://github.com/ethereum/cpp-ethereum/wiki/Building-on-Ubuntu) for dependencies (no need for qt)
 
-Note, eris stack is on a previous version of the languages (before the ABI spec) and so currently only support PoC6 LLL and Serpent 1.0
+Note, thelonious and its Genesis Doug were build on a previous version of the languages (before the ABI spec) and so currently only support PoC6 LLL and Serpent 1.0.
+But epm works fine using Solidity and Serpent on standard ethereum chains.
 
-Install `LLL` (eris LLL, which includes a few extra opcodes)
+To install `LLL` (eris LLL, which includes a few extra opcodes)
 
 ```
 git clone git@github.com:eris-ltd/eris-cpp
@@ -128,7 +133,7 @@ make
 sudo make install
 ```
 
-Install `Solidity` (not supported yet):
+Install `Solidity`:
 
 ```
 git clone git@github.com:ethereum/cpp-ethereum
@@ -139,7 +144,7 @@ cmake .. -
 make -j2
 ```
 
-Now the final thing is make sure the configuration paths are properly set. 
+Now the final thing is make sure the configuration paths are properly set.
 Running `epm init` (assuming epm is installed) should create the config file at `~/.decerver/languages/config.json`.
 Edit the `cmd` field for each language to have the correct path.
 

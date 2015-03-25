@@ -1,0 +1,107 @@
+State{
+    Trie *ethtrie.Trie
+    stateObjects map[string]*StateObject // cache
+    manifest *Manifest
+}
+
+// cache stateobject in state trie
+state.UpdateStateObject 
+    - put codhash in db
+    - trie.update(addr, stateObj.RlpEncode()) 
+
+GetStateObject 
+    - retrieve stateObjects[addr]
+    - else, retrieve trie.Get(addr)
+    - NewStateObjectFromBytes
+    - cache
+
+// move stores from storage cache to obj cache
+// update state trie (cache)
+Update
+    - for stateObject
+        - stateObject.Sync() // this does not sync their tries!
+        - UpdateStateObject(stateObject)
+    - ParanoiaCheck
+
+// full state sync (all caches are written)
+Sync
+    - for each stateObject.State.Sync()
+    - state.Trie.Sync()
+    - state.Empty() (empties the stateObjects cache)
+
+Reset
+    - Trie.Undo()
+    - for each stateObject.Reset()
+    - state.Empty()
+
+
+
+Accounts are StateObjects
+
+type StateObject struct {
+    address []byte
+    Balance  *big.Int
+    codeHash []byte
+    Nonce    uint64
+    // Contract related attributes
+    State    *State
+    Code     Code
+    InitCode Code
+
+    storage Storage // cache
+
+    gasPool *big.Int
+
+    remove bool
+}
+
+Reset
+    - renew storage cache
+    - State.Reset()
+
+NewContract
+    - NewStateObject
+    - Balance
+    - State (from root)
+
+NewStateObjectFromBytes
+    - RLP decode 
+
+
+/*
+    caching and retrieval funcs
+    addresses are bytes
+    storage keys are big ints
+*/
+
+GetAddr
+    - c.State.Trie.Get(addr)
+    - return as new value
+
+// cache (k, v) in trie (no db)
+SetAddr([]byte, interface{})
+    - c.State.Trie.Update(addr, encoded_val)
+
+GetStorage
+    - c.getStorage(key.Bytes())
+        - left pad key
+        - retrieve from storage cache
+        - else, c.GetAddr, add to cache
+
+SetStorage
+    - c.setStorage(key.Bytes(), value)
+        - left pad key
+        - cache
+
+EachStorage
+    - iterate through cache, encode val, pass to callback
+    - iterate through trie (not in cache), call callback
+
+// cache (no db!)
+Sync
+    - for each key, val in storage cache
+        - SetAddr(key, val)
+    - paranoia check
+
+
+

@@ -20,6 +20,7 @@ type Request struct {
 // Compile response object
 type Response struct {
 	Bytecode []byte `json:"bytecode"`
+	ABI      string `json:"abi"` // json encoded
 	Error    string `json:"error"`
 }
 
@@ -35,6 +36,7 @@ type ProxyReq struct {
 
 type ProxyRes struct {
 	Bytecode string `json:"bytecode"`
+	ABI      string `json:"abi"` // json encoded abi struct
 	Error    string `json:"error"`
 }
 
@@ -52,26 +54,32 @@ func NewRequest(script []byte, includes map[string][]byte, lang string) *Request
 }
 
 // New response object from bytecode and an error
-func NewResponse(bytecode []byte, err error) *Response {
+func NewResponse(bytecode []byte, abi string, err error) *Response {
 	e := ""
 	if err != nil {
 		e = err.Error()
 	}
+
 	return &Response{
 		Bytecode: bytecode,
+		ABI:      abi,
 		Error:    e,
 	}
 }
 
-func NewProxyResponse(bytecode []byte, err error) *ProxyRes {
+func NewProxyResponse(bytecode []byte, abi string, err error) *ProxyRes {
+	e := ""
+	if err != nil {
+		e = err.Error()
+	}
 	script := ""
-	res := NewResponse(bytecode, err)
 	if bytecode != nil {
 		script = hex.EncodeToString(bytecode)
 	}
 	return &ProxyRes{
 		Bytecode: script,
-		Error:    res.Error,
+		ABI:      abi,
+		Error:    e,
 	}
 }
 

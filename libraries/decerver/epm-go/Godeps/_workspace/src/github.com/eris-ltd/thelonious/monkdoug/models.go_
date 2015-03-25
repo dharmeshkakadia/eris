@@ -1,0 +1,293 @@
+
+
+// the easy fake model
+type FakeModel struct{
+    doug []byte
+    txers string
+    miners string
+    create string
+}
+
+func NewFakeModel(gendoug []byte) PermModel{
+    return &FakeModel{gendoug, "01", "02", "03"}
+}
+
+func (m *FakeModel) Doug(state *monkstate.State) *monkstate.StateObject{
+    return state.GetStateObject(m.doug)
+}
+
+func (m *FakeModel) PermLocator(addr []byte, perm string, state *monkstate.State) (*Location, error){
+    loc := new(Location)
+
+    var N string
+    switch(perm){
+        case "tx":
+            N = m.txers
+        case "mine":
+            N = m.miners
+        case "create":
+            N = m.create
+        default:
+            return nil, errors.New("Invalid permission name")
+    }
+    genDoug := state.GetStateObject(m.doug)
+    loc.addr = genDoug.GetStorage(monkutil.BigD(monkutil.Hex2Bytes(N))).Bytes()
+    addrBig := monkutil.BigD(monkutil.LeftPadBytes(addr, 32))
+    loc.row = addrBig
+
+    return loc, nil
+}
+
+func (m *FakeModel) GetPermission(addr []byte, perm string, state *monkstate.State) *monkutil.Value{
+    loc, err := m.PermLocator(addr, perm, state)
+    if err != nil{
+        fmt.Println("err on perm locator", monkutil.Bytes2Hex(addr), perm, err)
+        return monkutil.NewValue(nil)
+    }
+    obj := state.GetStateObject(loc.addr)
+    /*obj.EachStorage(func(k string, v *monkutil.Value){
+        fmt.Println(monkutil.Bytes2Hex([]byte(k)), monkutil.Bytes2Hex(v.Bytes()))
+    })*/
+    val := obj.GetStorage(loc.row)
+    return val
+}
+
+func (m *FakeModel) HasPermission(addr []byte, perm string, state *monkstate.State) error{
+    val := m.GetPermission(addr, perm, state)
+    if !val.IsNil(){
+        return nil
+    }
+    return fmt.Errorf("No!")
+}
+
+func (m *FakeModel) SetPermissions(addr []byte, permissions map[string]int, block *monkchain.Block, keys *monkcrypto.KeyPair) (monkchain.Transactions, []*monkchain.Receipt){
+    return nil, nil
+}
+
+
+func (m *FakeModel) SetValue(addr []byte, data []string, keys *monkcrypto.KeyPair, block *monkchain.Block) (*monkchain.Transaction, *monkchain.Receipt){
+    return nil, nil
+}
+
+func (m *FakeModel) GetValue(key, namespace string, state *monkstate.State) []byte{
+    return nil
+}
+
+func (m *FakeModel) ValidatePerm(addr []byte, role string, state *monkstate.State) bool{
+    return m.HasPermission(addr, role, state)        
+}
+
+func (m *FakeModel) ValidateValue(name string, value interface {}, state *monkstate.State) bool{
+    return true 
+}
+
+// TODO: these properly, if you even care...
+func (m *FakeModel) ValidateBlock(block *monkchain.Block) bool{
+    return m.HasPermission(block.Coinbase, "mine", block.State())
+}
+
+func (m *FakeModel) ValidateTx(tx *monkchain.Transaction, block *monkchain.Block) bool{
+    return m.HasPermission(tx.Sender(), "transact", block.State())
+}
+
+// the proper genesis doug, ala Dr. McKinnon
+type GenDougModel struct{
+    doug []byte
+    base *big.Int
+}
+
+func NewGenDougModel(gendoug []byte) PermModel{
+    return &GenDougModel{gendoug, new(big.Int)}
+}
+
+func (m *GenDougModel) Doug(state *monkstate.State) *monkstate.StateObject{
+    return state.GetOrNewStateObject(m.doug) // add or new so we can avoid panics..
+}
+
+
+func (m *GenDougModel) PermLocator(addr []byte, perm string, state *monkstate.State) (*Location, error) {
+    // location of the locator is perm+offset
+    locator := m.GetValue(perm, "perms", state) //m.resolvePerm(perm, state) 
+    //PrintHelp(map[string]interface{}{"loc":locator}, m.Doug(state))
+
+    if len(locator) == 0{
+        return nil, errors.New("could not find locator")
+    }
+    pos := monkutil.BigD(locator[len(locator)-1:]) // first byte
+    row := monkutil.Big("0")
+    if len(locator) > 1{
+        row = monkutil.BigD(locator[len(locator)-2:len(locator)-1])// second byte
+    }
+    // return permission string location
+    addrBig := monkutil.BigD(monkutil.LeftPadBytes(addr, 32))
+    permStrLocator := m.base.Add(m.base.Mul(addrBig, monkutil.Big("256")), row)
+
+    return &Location{m.doug, permStrLocator, pos}, nil
+
+}
+
+func (m *GenDougModel) GetPermission(addr []byte, perm string, state *monkstate.State) *monkutil.Value{
+    // get location object
+    loc, err := m.PermLocator(addr, perm, state)
+    if err != nil{
+        fmt.Println("err on perm locator", monkutil.Bytes2Hex(addr), perm, err)
+        return monkutil.NewValue(nil)
+    }
+    obj := state.GetStateObject(loc.addr)
+
+    // recover permission string
+    permstr := obj.GetStorage(loc.row)
+    
+    // recover permission from permission string (ie get nibble)
+    permbit := m.base.Div(permstr.BigInt(), m.base.Exp(monkutil.Big("2"), loc.pos, nil))
+    permBig := m.base.Mod(permbit, monkutil.Big("16"))
+    return monkutil.NewValue(permBig)
+}
+
+// determines if addr has sufficient permissions to execute perm
+func (m *GenDougModel) HasPermission(addr []byte, perm string, state *monkstate.State)bool{
+    permBig := m.GetPermission(addr, perm, state).BigInt()
+    return permBig.Int64() > 0
+}
+
+// set some permissions on an addr
+// requires keys with sufficient privileges
+func (m *GenDougModel) SetPermissions(addr []byte, permissions map[string]int, block *monkchain.Block, keys *monkcrypto.KeyPair) (monkchain.Transactions, []*monkchain.Receipt){
+
+    txs := monkchain.Transactions{}
+    receipts := []*monkchain.Receipt{}
+
+    for perm, val := range permissions{
+        data := monkutil.PackTxDataArgs("setperm", perm, "0x"+monkutil.Bytes2Hex(addr), "0x"+strconv.Itoa(val))
+        //fmt.Println("data for ", perm, monkutil.Bytes2Hex(data))
+        tx, rec := MakeApplyTx("", m.doug, data, keys, block)
+        txs = append(txs, tx)
+        receipts = append(receipts, rec)
+    }
+    //fmt.Println(permissions)
+    //os.Exit(0)
+    return txs, receipts
+}
+
+func (m *GenDougModel) SetValue(addr []byte, data []string, keys *monkcrypto.KeyPair, block *monkchain.Block) (*monkchain.Transaction, *monkchain.Receipt){
+    return nil, nil
+}
+
+func (m *GenDougModel) GetValue(key, namespace string, state *monkstate.State) []byte{
+    var loc *big.Int
+    //fmt.Println("get value:", key, namespace)
+    switch(namespace){
+        case "addrs":
+            loc = m.resolveAddr(key, state)
+        case "perms":
+            loc = m.resolvePerm(key, state)
+        case "values":
+            loc = m.resolveVal(key, state)    
+        case "special":
+            loc = m.resolveSpecial(key, state)
+        default:
+            return nil
+    }
+    //fmt.Println("loc after resolution for key in namespace:", key, namespace, monkutil.Bytes2Hex(loc.Bytes()))
+    val := m.Doug(state).GetStorage(loc)
+    //fmt.Println("corresponding value:", monkutil.Bytes2Hex(val.Bytes()))
+    return val.Bytes()
+}
+
+// resolve addresses for keys based on namespace partition
+// does not return the values, just their proper addresses!
+// offset used to partition namespaces
+// these don't need to take state if the offset is fixed
+//      it is fixed, but maybe one day it wont be?
+
+// resolve location of an address 
+func (m *GenDougModel) resolveAddr(key string, state *monkstate.State) *big.Int{
+    // addrs have no special offset
+    return String2Big(key)
+
+}
+
+// resolve location of  a permission locator
+func (m *GenDougModel) resolvePerm(key string, state *monkstate.State) *big.Int{
+    // permissions have one offset
+    offset := monkutil.BigD(m.GetValue("offset", "special", state) )
+    // turn permission to big int
+    permBig := String2Big(key) 
+    // location of the permission locator is perm+offset
+    //PrintHelp(map[string]interface{}{"offset":offset, "permbig":permBig, "sum":m.base.Add(offset, permBig)}, m.Doug(state))
+    return m.base.Add(offset, permBig)
+}
+
+// resolve location of a named value
+func (m *GenDougModel) resolveVal(key string, state *monkstate.State) *big.Int{
+    // values have two offsets
+    offset := monkutil.BigD(m.GetValue("offset", "special", state) )
+    // turn key to big int
+    valBig := String2Big(key) 
+    // location of this value is (+ key (* 2 offset))
+    return m.base.Add(m.base.Mul(offset, big.NewInt(2)), valBig)
+}
+
+// resolve position of special values
+func (m *GenDougModel) resolveSpecial(key string, state *monkstate.State) *big.Int{
+    switch(key){
+        case "offset":
+            return big.NewInt(7)
+    }
+    return nil
+}
+
+
+func (m *GenDougModel) ValidatePerm(addr []byte, role string, state *monkstate.State) bool{
+    return m.HasPermission(addr, role, state)
+}
+
+func (m *GenDougModel) ValidateValue(name string, value interface{}, state *monkstate.State) bool{
+    return true
+}
+
+func (m *GenDougModel) ValidateBlock(block *monkchain.Block) bool{
+    return m.HasPermission(block.Coinbase, "mine", block.State())
+}
+
+func (m *GenDougModel) ValidateTx(tx *monkchain.Transaction, block *monkchain.Block) bool{
+    return m.HasPermission(tx.Sender(), "transact", block.State())
+}
+
+
+
+func (m *VmModel) ValidateBlock(block *monkchain.Block, bc *monkchain.ChainManager) error {
+	parent := bc.CurrentBlock()
+	state := parent.State()
+
+	if scall, ok := m.getSysCall("block-verify", state); ok {
+		addr := scall.byteAddr
+		obj, code := m.pickCallObjAndCode(addr, state)
+		// get block args
+		prevhash := block.PrevHash
+		unclesha := block.UncleSha
+		coinbase := block.Coinbase
+		stateroot := monkutil.NewValue(block.GetRoot()).Bytes()
+		txsha := block.TxSha
+		diff := block.Difficulty.Bytes()
+		number := block.Number.Bytes()
+		minGasPrice := block.MinGasPrice.Bytes()
+		gasLim := block.GasLimit.Bytes()
+		gasUsed := block.GasUsed.Bytes()
+		t := big.NewInt(block.Time).Bytes()
+		extra := []byte(block.Extra)
+		sig := block.GetSig()
+
+		prevdiff := parent.Difficulty.Bytes()
+		prevT := big.NewInt(parent.Time).Bytes()
+
+		data := monkutil.PackTxDataBytes(block.Hash(), prevhash, unclesha, coinbase, stateroot, txsha, diff, prevdiff, number, minGasPrice, gasLim, gasUsed, t, prevT, extra, sig[:64], monkutil.RightPadBytes([]byte{sig[64] - 27}, 32))
+
+		ret := m.EvmCall(code, data, obj, state, nil, block, true)
+		if monkutil.BigD(ret).Uint64() > 0 {
+			return nil
+		}
+		return fmt.Errorf("Permission error")
+	}
+	return m.ValidatePerm(block.Coinbase, "mine", block.State())
+}

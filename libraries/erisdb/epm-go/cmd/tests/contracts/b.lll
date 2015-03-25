@@ -1,0 +1,14 @@
+
+{
+    [[0x42]]0x8080
+    (def 'dougie 0x1313)
+    [[dougie]]0x15
+    [[@@dougie]]0x6
+
+    (return 0 (lll
+        {
+            [[(calldataload 0x0)]](calldataload 0x20)
+            [['dougie]]"yes please"
+        }
+    0))
+}

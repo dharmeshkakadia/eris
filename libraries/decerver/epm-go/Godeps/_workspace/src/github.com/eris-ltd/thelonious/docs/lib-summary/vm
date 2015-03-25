@@ -1,0 +1,51 @@
+Closure is caller, stateobj, code, msg ,gas/used, price, dataargs
+
+vm_env is state, block, tx, and simple functions for all the key info
+
+vm has env, log, err, Dbg, BreakPoints, Stepping, Fn, Recoverable, queue
+
+vm runs the closure
+
+msg is a vm, closure, addr, input, gas/price/val, obj
+
+closure.Call
+    - vm.RunClosure(c)
+
+RunClosure
+    -
+
+
+CREATE
+    - tx params, snapshot
+    - set address
+    - incr nonce
+    - use gas
+    //- set code for new object 
+    - new msg obj
+    - msg.Exec
+    - if ok, set obj.code, push addr to stack
+
+
+CALL
+    -tx params
+    - new msg
+    - msg.Exec
+    - if ok, push true on stack, set mem with return
+
+POST
+    - tx params
+    - msg
+    - msg.Postpone
+
+
+Exec
+    - vm queue
+    - add msg manifest
+    - if funds legit
+        - get state obj
+        - add/sub amount
+        - code
+        - new closure(msg, caller, stateobj, code, gas, price)
+        - c.Call(vm, input)
+        
+

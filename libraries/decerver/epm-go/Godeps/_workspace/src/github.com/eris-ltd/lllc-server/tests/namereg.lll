@@ -1,0 +1,8 @@
+{
+    (include "support.lll")
+    (return 0 (lll {
+        [[(CALLDATALOAD 0x0)]] (CALLDATALOAD 0x20)
+    	[[abc]]0x3
+    	[[def]]0x3
+    } 0))
+}

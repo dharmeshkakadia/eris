@@ -1,0 +1,34 @@
+{
+	"ImportPath": "github.com/eris-ltd/lllc-server",
+	"GoVersion": "go1.4.1",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/codegangsta/cli",
+			"Comment": "1.2.0-50-ga14c5b4",
+			"Rev": "a14c5b47c7efa4ff80cc42e1079a34b4756f2311"
+		},
+		{
+			"ImportPath": "github.com/codegangsta/inject",
+			"Comment": "v1.0-rc1-4-g4b81725",
+			"Rev": "4b8172520a03fa190f427bbd284db01b459bfce7"
+		},
+		{
+			"ImportPath": "github.com/eris-ltd/epm-go/utils",
+			"Comment": "v0.8-98-g65382ed",
+			"Rev": "65382eda2b4b28d94950f8c8703699d7608ede36"
+		},
+		{
+			"ImportPath": "github.com/eris-ltd/thelonious/monklog",
+			"Comment": "v0.8-59-gba47990",
+			"Rev": "ba47990cdc9c6666a2d0c870685346e3f79c9080"
+		},
+		{
+			"ImportPath": "github.com/go-martini/martini",
+			"Comment": "v1.0-85-gbbd489b",
+			"Rev": "bbd489b35fd7eac9aaf442e5671ab21cdd972926"
+		}
+	]
+}

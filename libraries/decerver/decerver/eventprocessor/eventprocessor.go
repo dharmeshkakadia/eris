@@ -5,7 +5,7 @@ package eventprocessor
 import (
 	"fmt"
 	"encoding/json"
-	"github.com/eris-ltd/modules/types"
+	"github.com/eris-ltd/thelonious/Godeps/_workspace/src/github.com/eris-ltd/modules/types"
 	"github.com/eris-ltd/decerver/interfaces/decerver"
 	"github.com/eris-ltd/decerver/interfaces/events"
 	"github.com/eris-ltd/decerver/interfaces/logging"
@@ -140,7 +140,7 @@ type EventProcessor struct {
 
 func NewEventProcessor(dc decerver.Decerver) events.EventProcessor {
 	ep := &EventProcessor{}
-	
+
 	ep.subs = make(map[string]SubMap)
 	ep.byId = make(map[string]events.Subscriber)
 	ep.moduleManager = dc.ModuleManager()
@@ -153,7 +153,7 @@ func NewEventProcessor(dc decerver.Decerver) events.EventProcessor {
 	ep.unsubChan = make(chan string)
 	ep.incomingChans = make(map[string]chan types.Event)
 	ep.closeChan = make(chan interface{})
-	
+
 	go func(ep *EventProcessor){
 		for {
 			select{
@@ -168,9 +168,9 @@ func NewEventProcessor(dc decerver.Decerver) events.EventProcessor {
 					return
 			}
 		}
-		
+
 	}(ep)
-	
+
 	return ep
 }
 
@@ -182,7 +182,7 @@ func (ep *EventProcessor) post(e types.Event) error {
 		ep.td.incPosted(src)
 		logger.Println("Receiving event '" + ee + "' from '" + src + "'.")
 	}
-	
+
 	sourceSubs := ep.subs[src]
 	if sourceSubs == nil || len(sourceSubs) == 0 {
 		if ep.debug {
