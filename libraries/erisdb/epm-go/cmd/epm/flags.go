@@ -241,4 +241,9 @@ var (
 		Name:  "no-new",
 		Usage: "dont deploy a new chain for installation of the dapp",
 	}
+
+	compilerFlag = cli.StringFlag{
+		Name:  "compiler",
+		Usage: "specify <host>:<port> to use for compile server",
+	}
 )

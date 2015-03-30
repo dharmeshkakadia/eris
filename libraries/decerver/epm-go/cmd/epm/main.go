@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/eris-ltd/epm-go/Godeps/_workspace/src/github.com/codegangsta/cli"
 	"github.com/eris-ltd/epm-go/Godeps/_workspace/src/github.com/eris-ltd/thelonious/monklog"
+	"github.com/eris-ltd/epm-go/epm"
 	"github.com/eris-ltd/epm-go/utils"
 	"os"
 	"path"
@@ -48,6 +49,9 @@ func main() {
 		rpcPortFlag,
 		rpcLocalFlag,
 
+		// languages
+		compilerFlag,
+
 		// runtime configuration
 		runConfigFlag,
 	}
@@ -84,6 +88,9 @@ func before(c *cli.Context) error {
 	utils.InitLogging(path.Join(utils.Logs, "epm"), "", c.Int("log"), "")
 	if _, err := os.Stat(utils.Decerver); err != nil {
 		exit(fmt.Errorf("Could not find decerver tree. Did you run `epm init`?"))
+	}
+	if c.GlobalIsSet("compiler") {
+		epm.SetCompilerServer(c.GlobalString("compiler"))
 	}
 	return nil
 }

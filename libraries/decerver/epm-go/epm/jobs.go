@@ -283,3 +283,10 @@ func Modify(contract string, args []string) (string, error) {
 	}
 	return newPath, nil
 }
+
+func SetCompilerServer(hostPort string) {
+	for lang, _ := range lllcserver.Languages {
+		lllcserver.SetLanguageURL(lang, hostPort)
+		lllcserver.SetLanguageNet(lang, true)
+	}
+}

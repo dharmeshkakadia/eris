@@ -160,6 +160,9 @@ func checkInit() error {
 
 func editor(file string) error {
 	editr := os.Getenv("EDITOR")
+	if strings.Contains(editr, "/") {
+		editr = path.Base(editr)
+	}
 	switch editr {
 	case "", "vim", "vi":
 		return vi(file)

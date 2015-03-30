@@ -28,7 +28,7 @@ module.exports = {
       .setValue('//textarea[@id="input"]', "Hello, world!")
       .click('(//button)[1]')
       .waitForElementPresent('//div[@id="alertPresent"]', 1000)
-
+      .pause(500) // blocks take a bit of time to propagate and be processed by read nodes
       .url('http://helloworldread:3000/helloworld/')
       .waitForElementVisible('//input[@id="filenameGet"]', 10000)
       .setValue('//input[@id="filenameGet"]', "greeting")
