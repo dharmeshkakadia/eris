@@ -1,82 +1,91 @@
-# Ethereum C++ Client
-# https://github.com/ethereum/cpp-ethereum/blob/74b085efea90dbce18a7320ff05cda0de0bd99d5/docker/Dockerfile
-
-# Make sure you have at least 2 GB RAM.
-
 FROM ubuntu:14.04
+MAINTAINER Eris Industries <support@erisindustries.com>
 
+# Install Golang
 ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get update
-RUN apt-get upgrade -y
-
-# Ethereum dependencies
-RUN apt-get install -qy build-essential g++-4.8 git cmake libboost-all-dev libcurl4-openssl-dev wget
-RUN apt-get install -qy automake unzip libgmp-dev libtool libleveldb-dev yasm libminiupnpc-dev libreadline-dev scons
-RUN apt-get install -qy libjsoncpp-dev libargtable2-dev
-
-# NCurses based GUI (not optional though for a succesful compilation, see https://github.com/ethereum/cpp-ethereum/issues/452 )
-RUN apt-get install -qy libncurses5-dev
-
-# Qt-based GUI
-# RUN apt-get install -qy qtbase5-dev qt5-default qtdeclarative5-dev libqt5webkit5-dev
-
-# Ethereum PPA
-RUN apt-get install -qy software-properties-common
-RUN add-apt-repository ppa:ethereum/ethereum
-RUN apt-get update
-RUN apt-get install -qy libcryptopp-dev libjson-rpc-cpp-dev
-
-# Go
-# https://github.com/docker-library/golang/blob/304244cfe374d3477e746c057a5ec4dcf7a47657/1.4/Dockerfile
-
-RUN apt-get install -qy curl
-
-# gcc for cgo
-RUN apt-get update && apt-get install -y \
-    gcc libc6-dev make \
-    --no-install-recommends \
-  && rm -rf /var/lib/apt/lists/*
-
-ENV GOLANG_VERSION 1.4.1
-
+RUN apt-get update && apt-get install -qy \
+  ca-certificates \
+  curl \
+  gcc \
+  git \
+  libc6-dev
+ENV GOLANG_VERSION 1.4.2
 RUN curl -sSL https://golang.org/dl/go$GOLANG_VERSION.src.tar.gz \
-    | tar -v -C /usr/src -xz
-
+  | tar -v -C /usr/src -xz
 RUN cd /usr/src/go/src && ./make.bash --no-clean 2>&1
-
 ENV PATH /usr/src/go/bin:$PATH
-
-RUN mkdir -p /go/src
+RUN mkdir -p /go/src /go/bin && chmod -R 777 /go
 ENV GOPATH /go
 ENV PATH /go/bin:$PATH
 WORKDIR /go
 
-# Install LLL (eris LLL, which includes a few extra opcodes)
+# Install the building dependencies
+RUN apt-get install -qy \
+  automake \
+  build-essential \
+  cmake \
+  g++-4.8 \
+  libargtable2-dev \
+  libboost-all-dev \
+  libcurl4-openssl-dev \
+  libgmp-dev \
+  libjsoncpp-dev \
+  libleveldb-dev \
+  libminiupnpc-dev \
+  libncurses5-dev \
+  libreadline-dev \
+  libtool \
+  make \
+  scons \
+  software-properties-common \
+  wget \
+  yasm \
+  unzip
 
-COPY eris-cpp /usr/local/src/eris-cpp
-WORKDIR /usr/local/src/eris-cpp/build
-RUN sh instructions
+# Install serpent
+ENV repository serpent
+RUN git clone https://github.com/ethereum/serpent /usr/local/src/$repository
+WORKDIR /usr/local/src/$repository
+RUN git checkout develop
+RUN make && make install
 
-# LLLC-server
+# Solc
+RUN add-apt-repository -y ppa:ethereum/ethereum && \
+  add-apt-repository -y ppa:ethereum/ethereum-qt && \
+  add-apt-repository -y ppa:ethereum/ethereum-dev && \
+  apt-get update && apt-get install -qy \
+  libcryptopp-dev \
+  libjson-rpc-cpp-dev \
+  lllc \
+  solc \
+  && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir --parents $GOPATH/src/github.com/eris-ltd
-COPY lllc-server $GOPATH/src/github.com/eris-ltd/lllc-server
-WORKDIR $GOPATH/src/github.com/eris-ltd/lllc-server/cmd/lllc-server
-RUN go get .
+# Install Eris LLL, which includes a few extra opcodes
+ENV repository eris-cpp
+RUN mkdir /usr/local/src/$repository
+WORKDIR /usr/local/src/$repository
+RUN curl --location https://github.com/eris-ltd/$repository/archive/master.tar.gz \
+ | tar --extract --gzip --strip-components=1
+WORKDIR build
+RUN bash instructions
 
-ENV user eris
-RUN groupadd --system $user && useradd --system --create-home --gid $user $user
+# LLLC-server, a go app that manages compilations
+ENV repository lllc-server
+RUN mkdir --parents $GOPATH/src/github.com/eris-ltd/$repository
+COPY . $GOPATH/src/github.com/eris-ltd/$repository
+WORKDIR $GOPATH/src/github.com/eris-ltd/$repository/cmd/$repository
+RUN go get -d && go install
+
+# Add Eris User
+RUN groupadd --system eris && useradd --system --create-home --gid eris eris
 
 ## Point to the compiler location.
+RUN mkdir --parents /home/eris/.decerver/languages
+COPY tests/config.json /home/eris/.decerver/languages/config.json
+RUN chown --recursive eris /home/eris/.decerver
 
-COPY config.json /home/$user/.decerver/languages/
-RUN chown --recursive $user /home/$user/.decerver
-
-# Test compiler.
-
-USER $user
-WORKDIR ../..
-RUN go test --test.run LLLClientLocal
+USER eris
+WORKDIR /home/eris/
 
 EXPOSE 9099
 CMD ["lllc-server"]

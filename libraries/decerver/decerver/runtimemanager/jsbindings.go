@@ -102,7 +102,7 @@ func bindGo(vm *otto.Otto) {
 		result, _ := vm.ToValue(ret)
 		return result
 	})
-	
+
 	vm.Set("LT", func(call otto.FunctionCall) otto.Value {
 		p0, p1, errP := parseBin(call)
 		if errP != nil {
@@ -115,7 +115,7 @@ func bindGo(vm *otto.Otto) {
 		result, _ := vm.ToValue(ret)
 		return result
 	})
-	
+
 	vm.Set("LEQ", func(call otto.FunctionCall) otto.Value {
 		p0, p1, errP := parseBin(call)
 		if errP != nil {
@@ -128,7 +128,7 @@ func bindGo(vm *otto.Otto) {
 		result, _ := vm.ToValue(ret)
 		return result
 	})
-	
+
 	vm.Set("GT", func(call otto.FunctionCall) otto.Value {
 		p0, p1, errP := parseBin(call)
 		if errP != nil {
@@ -141,7 +141,7 @@ func bindGo(vm *otto.Otto) {
 		result, _ := vm.ToValue(ret)
 		return result
 	})
-	
+
 	vm.Set("GEQ", func(call otto.FunctionCall) otto.Value {
 		p0, p1, errP := parseBin(call)
 		if errP != nil {
@@ -223,7 +223,7 @@ func bindGo(vm *otto.Otto) {
 		result, _ := vm.ToValue(ts)
 		return result
 	})
-	
+
 	// Millisecond time.
 	vm.Set("GetUserHome", func(call otto.FunctionCall) otto.Value {
 		fmt.Println("Getting user home.");
@@ -315,16 +315,16 @@ func bindGo(vm *otto.Otto) {
 
 func bindCore(vm *otto.Otto) {
 	_, err := vm.Run(`
-		
+
 		// (Integer) math done on strings. The strings can be
 		// either hex or decimal. Hex strings should be prepended
 		// by '0x'. All arithmetic operations has integer inputs and
 		// outputs (no floating point numbers).
 		//
-		// If the returned value is a number, as in 'add' or 'mul', 
+		// If the returned value is a number, as in 'add' or 'mul',
 		// then it is always a hex-string.
 		var smath = {};
-		
+
 		// Add the two numbers A and B
 		//
 		// Params: A and B (as strings)
@@ -332,7 +332,7 @@ func bindCore(vm *otto.Otto) {
 		smath.add = function(A,B){
 			return Add(A,B);
 		}
-		
+
 		// Subtract number B from the number A
 		//
 		// Params: A and B (as strings)
@@ -340,7 +340,7 @@ func bindCore(vm *otto.Otto) {
 		smath.sub = function(A,B){
 			return Sub(A,B);
 		}
-		
+
 		// Multiply the two numbers A and B
 		//
 		// Params: A and B (as strings)
@@ -348,7 +348,7 @@ func bindCore(vm *otto.Otto) {
 		smath.mul = function(A,B){
 			return Mul(A,B);
 		}
-		
+
 		// Divide the two numbers A and B
 		//
 		// Params: A and B (as strings)
@@ -357,7 +357,7 @@ func bindCore(vm *otto.Otto) {
 		smath.div = function(A,B){
 			return Div(A,B);
 		}
-		
+
 		// Calculates A mod B
 		//
 		// Params: A and B (as strings)
@@ -366,7 +366,7 @@ func bindCore(vm *otto.Otto) {
 		smath.mod = function(A,B){
 			return Mod(A,B);
 		}
-		
+
 		// Calculates A ^ B (A raised to the power of B)
 		//
 		// Params: A and B (as strings)
@@ -374,7 +374,7 @@ func bindCore(vm *otto.Otto) {
 		smath.exp = function(A,B){
 			return Exp(A,B);
 		}
-		
+
 		// Calculates whether the input is equal to zero or not.
 		// This is true if the input is "0", "0x0", or "0x" (eth quirk)
 		//
@@ -383,7 +383,7 @@ func bindCore(vm *otto.Otto) {
 		smath.isZero = function(sNum){
 			return IsZero(sNum);
 		}
-		
+
 		// Calculates whether the two input number-strings are equal.
 		// This is true if the two numbers evaluate to the same
 		// Go-lang big integer value, meaning that regardless of
@@ -394,12 +394,12 @@ func bindCore(vm *otto.Otto) {
 		smath.equals = function(A,B){
 			return Equals(A,B);
 		}
-		
+
 		// A few easy-to-use string utility functions, such as converting
 		// between a string value and a hex representation of that string.
 		var sutil = {};
-				
-		// Takes a string and converts it into a 32 byte left-padded 
+
+		// Takes a string and converts it into a 32 byte left-padded
 		// hex string. This is useful when passing strings as arguments
 		// to blockchain transactions.
 		//
@@ -407,28 +407,28 @@ func bindCore(vm *otto.Otto) {
 		sutil.stringToHex = function(stringVal){
 			return StringToHex(stringVal);
 		}
-		
+
 		// Takes a hex string and converts it into a normal string. It does
 		// so by converting the hex string into bytes, then converts the
 		// bytes into a string.
 		//
 		// Example:
 		// The hex string "0x4142" is converted to the byte array [0x41,0x42],
-		// which is the string "AB". 
+		// which is the string "AB".
 		//
 		// Note: Don't attempt UTF strings. That's not fully supported (yet).
 		sutil.hexToString = function(stringVal){
 			return HexToString(stringVal);
 		}
-		
+
 		// Crypto utility
 		var scrypto = {};
-		
+
 		// Takes the sha3 digest of the argument string.
 		scrypto.sha3 = function(stringVal){
 			return SHA3(stringVal);
 		}
-		
+
 	`)
 
 	if err != nil {
@@ -442,12 +442,12 @@ func bindNetworking(vm *otto.Otto) {
 
 	// Networking.
 	_, err := vm.Run(`
-		
+
 		// Network is an object that encapsulates all networking activity.
 		var network = {};
-		
+
 		// Http
-		
+
 		// Returns a default response object. Status is 0, header and body is empty.
 		network.getHttpResponse = function(status,header,body){
 			return {
@@ -456,7 +456,7 @@ func bindNetworking(vm *otto.Otto) {
 				"Body" : body || "Not supported."
 			};
 		}
-		
+
 		// Returns a response object with status 500, empty header, and body set to: "Internal error"
 		network.getHttpResponse500 = function(){
 			return {
@@ -465,7 +465,7 @@ func bindNetworking(vm *otto.Otto) {
 				"Body" : "Internal error"
 			};
 		}
-		
+
 		// Returns a http request with status 200, empty header, and (what should be) a json formatted
 		// string as body.
 		network.getHttpResponseJSON = function(obj){
@@ -475,7 +475,7 @@ func bindNetworking(vm *otto.Otto) {
 				"Body" : JSON.stringify(obj)
 			};
 		}
-		
+
 		// This should be overridden by dapps. It is called whenever a new http request arrives, and
 		// will pass the request object as argument to the function.
 		//
@@ -487,7 +487,7 @@ func bindNetworking(vm *otto.Otto) {
 				"Body" : ""
 			};
 		}
-		
+
 		// Used internally. Do not call this from javascript.
 		network.handleIncomingHttp = function(httpReqAsJson){
 			var httpReq = JSON.parse(httpReqAsJson);
@@ -495,13 +495,18 @@ func bindNetworking(vm *otto.Otto) {
 			var rets;
 			try {
 				rets = JSON.stringify(ret);
-				Println("Json string of resp obj:\n" + rets);
+				if (rets.length < 10000) {
+					Println("Json string of resp obj:\n" + rets);
+				} else {
+					retsPrint = rets.substr(0, 10000) + " ...{truncated}";
+					Println("Json string of resp obj:\n" + retsPrint);
+				}
 				return rets;
 			} catch(err) {
 				return network.getHttpResponse500();
 			}
 		};
-		
+
 		network.registerIncomingHttpCallback = function(callback){
 			if(typeof callback !== "function"){
 				throw Error("Attempting to register a non-function as incoming http callback");
@@ -509,9 +514,9 @@ func bindNetworking(vm *otto.Otto) {
 			Println("New http request callback registered");
 			network.incomingHttpCallback = callback;
 		}
-		
+
 		// Websockets
-		
+
 		// Error codes for ESRPC
 		var E_PARSE = -32700;
 		var E_INVALID_REQ = -32600;
@@ -519,7 +524,7 @@ func bindNetworking(vm *otto.Otto) {
 		var	E_BAD_PARAMS = -32602;
 		var	E_INTERNAL = -32603;
 		var	E_SERVER = -32000;
-		
+
 		// Convenience method for creating an ESPRC response.
 		network.getWsResponse = function(){
 			return {
@@ -531,7 +536,7 @@ func bindNetworking(vm *otto.Otto) {
 				"Id" : ""
 			};
 		}
-		
+
 		// Convenience method for creating an ESPRC response from
 		// an error.
 		network.getWsError = function(error){
@@ -551,9 +556,9 @@ func bindNetworking(vm *otto.Otto) {
 				  }
 			};
 		}
-		
+
 		// Convenience method for creating an ESPRC response from
-		// an error. This allows you to fill in more details then 
+		// an error. This allows you to fill in more details then
 		// network.getWsError
 		network.getWsErrorDetailed = function(code, message, data){
 			return {
@@ -569,11 +574,11 @@ func bindNetworking(vm *otto.Otto) {
 				  }
 			};
 		}
-		
+
 		// Convenience method for creating an ESPRC response from
 		// a E_BAD_PARAMS error.
 		network.getWsBPError = function(msg){
-		
+
 			if(typeof(msg) !== "string") {
 				if(typeof(msg) !== "undefined") {
 					msg = "Server passed non string to error function (bad server-side javascript).";
@@ -583,7 +588,7 @@ func bindNetworking(vm *otto.Otto) {
 			} else if(msg === ""){
 				msg = "Invalid params to method call.";
 			}
-			
+
 			return {
 				"Protocol" : "EWSMP1",
 				"Method" : "",
@@ -597,22 +602,22 @@ func bindNetworking(vm *otto.Otto) {
 				  }
 			};
 		}
-		
-		
+
+
 		// handlers for websockets.
 		network.wsHandlers = {};
 		// the websocket sessions themselves.
 		network.wsSessions = {};
-		
+
 		// This is used to set a callback for each new session.
-		// the default function does nothing, and should be 
+		// the default function does nothing, and should be
 		// overriden in dapp backend javascript.
 		network.newWsCallback = function(sessionObj){
 			return function (){
 				Println("No callback registered for new websocket connections.");
 			};
 		};
-		
+
 		// This is called from go code as a response to newly negotiated
 		// websocket connections. It is used to bind the session object
 		// to the runtime.
@@ -623,14 +628,14 @@ func bindNetworking(vm *otto.Otto) {
 			network.wsHandlers[sId] = network.newWsCallback(sessionObj);
 			network.wsSessions[sId] = sessionObj;
 		}
-		
+
 		// This is called whenever a session is deleted.
 		network.deleteWsCallback = function(sessionObj){
 			return function (){
 				Println("No callback registered for delete websocket connections.");
 			};
 		};
-		
+
 		// Called from go code to delete a session.
 		// WARNING: Should not be used.
 		network.deleteWsSession = function(sessionId){
@@ -644,7 +649,7 @@ func bindNetworking(vm *otto.Otto) {
 			network.wsSessions[sId] = null;
 			network.deleteWsCallback(sessionObj);
 		}
-		
+
 		// This is called from go code when new messages arrive.
 		// WARNING: Should not be used.
 		network.incomingWsMsg = function(sessionId, reqJson) {
@@ -675,36 +680,36 @@ func bindNetworking(vm *otto.Otto) {
 				response = JSON.stringify(network.getWsError(E_PARSE, err));
 			}
 		}
-		
+
 		// Parse the url of a request into a formatted URL object.
 		// TODO document and handle errors.
 		network.parseUrl = function(httpReq){
 			// This would become ["apis", "dappname", "whatever", ... ]
 			var p = httpReq.URL.Path;
 			var pSplit = p.slice(1).split('/');
-			
+
 			// We cut out "apis" and "dappname".
 			if (pSplit.length < 2){
 				return network.newUrlObj([],{},"Invalid URL");
 			}
 			pSplit = pSplit.slice(2);
-			
+
 			var opts = {};
-			
+
 			var rawQuery = httpReq.URL.RawQuery.split('&');
-			
+
 			for(var i = 0; i < rawQuery.length; i++) {
 				var q = rawQuery[i].split('=');
 				// TODO error
-				opts[q[0]] = q[1]; 
+				opts[q[0]] = q[1];
 			}
-			
+
 			var urlObj = network.newUrlObj(pSplit,opts,"");
 			return urlObj;
 		}
-		
+
 		// Called by network.parseUrl()
-		// 'path' is an array of strings 
+		// 'path' is an array of strings
 		// 'opts' is a string->string map
 		// 'error' is a string
 		// TODO document and handle errors
@@ -715,7 +720,7 @@ func bindNetworking(vm *otto.Otto) {
 				return {"path" : path || [], "options" : opts || {}, "error" : error || ""};
 			}
 		}
-		
+
 	`)
 
 	if err != nil {
@@ -727,21 +732,21 @@ func bindNetworking(vm *otto.Otto) {
 
 func bindEvents(vm *otto.Otto) {
 	_, err := vm.Run(`
-		
+
 		// This is the events object. It handles events that comes
 		// in from the event processor.
 		var events = {};
-		
+
 		// These are callbacks that are used for events.
 		events.callbacks = {};
-		
+
 		/*  Called to subscribe on an event.
 		 *
 		 *  Params:
 		 *  eventSource - the source module, ipfs, monk, etc. (string)
 		 *  eventType   - the type of event. Could be 'newBlock' for monk. (string)
 		 *  eventTarget - optional (string)
-		 *  callbackFn  - the callback function to use when the event (string). 
+		 *  callbackFn  - the callback function to use when the event (string).
 		 *                comes in.
 		 *  uid         - usually the session id as a string. Used to make the id unique.
 		 *                Uid needs to be a string.
@@ -757,13 +762,13 @@ func bindEvents(vm *otto.Otto) {
 			events_subscribe(eventSource, eventType, eventTarget, eventId);
 			this.callbacks[eventId] = callbackFn;
 		}
-		
+
 		events.unsubscribe = function(eventSource,eventName, uid){
 			var subId = events.generateId(eventSource,eventName, uid);
 			events_unsubscribe(subId);
 			events.callbacks[subId] = null;
 		}
-		
+
 		// Called by the go event processor.
 		events.post = function(subId, eventJson){
 			var event = JSON.parse(eventJson);
@@ -775,7 +780,7 @@ func bindEvents(vm *otto.Otto) {
 			}
 			return;
 		}
-		
+
 		// used by events to generate unique subscriber Ids based on
 		// the event source and name.
 		events.generateId = function(evtSource,evtName, uid){
@@ -793,53 +798,53 @@ func bindEvents(vm *otto.Otto) {
 func bindUtilities(vm *otto.Otto) {
 
 	_, err := vm.Run(`
-		
+
 		var STATUS_NORMAL = 0;
 		var STATUS_WARNING = 1;
 		var STATUS_ERROR = 2;
 		var STATUS_CRITICAL = 3;
-		
+
 		var validator = new function(){
-			
+
 			// TODO add
 			this.validateBlockchain = function(blockchain){
 				return true;
 			}
-			
+
 			this.validateFilesystem = function(filesystem){
 				return true;
 			}
-			
-		}		
-		
+
+		}
+
 		// This is a simple decerver API is for dapps. Gives access to monk, ipfs and legal markdown.
 		function LightApi(){
-			
+
 			// *************************** Variables *************************
-			
+
 			// The blockchain we're using.
 			var bc = monk;
-			
+
 			// This is the root contract of any given dapp, as provided by the
-			// dapps package.json. It is bound to the runtime under the name 
+			// dapps package.json. It is bound to the runtime under the name
 			// "RootContract".
 			var rootContract;
-			
+
 			if (typeof(RootContract) !== "undefined"){
 				rootContract = RootContract;
 			} else {
 				Println("No root contract address! The dapp will not work.");
 				rootContract = "0x0";
 			}
-			
+
 			// The first four hex-digits (or two bytes) of the ipfs hash.
 			var ipfsHead = "1220";
-			
+
 			// Used internally to keep track of received events.
 			var eventCallbacks = {};
-		
+
 			// ************************* Blockchain ************************
-			
+
 			// Gets you the balance of the account with address 'accountAddress'.
 			this.balanceAt = function(accountAddress){
 				var acc = this.account(accountAddress)
@@ -849,7 +854,7 @@ func bindUtilities(vm *otto.Otto) {
 					return acc.Balance;
 				}
 			}
-		
+
 			// Gets you the value stored at address 'storageAddress' in the account
 			// with address 'accountAddress'
 			this.storageAt = function(accountAddress,storageAddress){
@@ -860,7 +865,7 @@ func bindUtilities(vm *otto.Otto) {
 					return sa.Data;
 				}
 			}
-			
+
 			// Gets you the entire storage of the account with address 'accountAddress'.
 			this.storage = function(accountAddress){
 				var storage = bc.Storage(accountAddress);
@@ -870,7 +875,7 @@ func bindUtilities(vm *otto.Otto) {
 					return storage.Data;
 				}
 			}
-		
+
 			// Gets you the account with address 'accountAddress'
 			this.account = function(accountAddress){
 				var a = bc.Account(accountAddress);
@@ -880,15 +885,15 @@ func bindUtilities(vm *otto.Otto) {
 					return a.Data;
 				}
 			}
-		
+
 			this.msg = function(recipient,txData){
-		
+
 				var msgRecipe = {
 					"Success" : false,
 					"Hash" : "",
 					"Error" : ""
 				};
-		
+
 				var m = bc.Msg(recipient,txData);
 				if (m.Error !== ""){
 					msgRecipe.Error = m.Error;
@@ -898,15 +903,15 @@ func bindUtilities(vm *otto.Otto) {
 				}
 				return msgRecipe;
 			}
-		
+
 			this.endow = function(recipient,sum){
-		
+
 				var edRecipe = {
 					"Success" : false,
 					"Hash" : "",
 					"Error" : ""
 				};
-		
+
 				var e = bc.Msg(recipient,txData);
 				if (e.Error !== ""){
 					edRecipe.Error = e.Error;
@@ -916,16 +921,16 @@ func bindUtilities(vm *otto.Otto) {
 				}
 				return msgRecipe;
 			}
-		
+
 			this.script = function(script,language){
-		
+
 				var scRecipe = {
 					"Compiled" : false,
 					"Hash" : "",
 					"Address" : "",
 					"Error" : ""
 				};
-		
+
 				var s = bc.Script(recipient,txData);
 				if (s.Error !== ""){
 					edRecipe.Error = s.Error;
@@ -935,10 +940,10 @@ func bindUtilities(vm *otto.Otto) {
 				}
 				return msgRecipe;
 			}
-		
+
 			// Sends a "full" transaction to the blockchain.
 			this.transact = function(recipientAddress,value,gas,gascost,data){
-				
+
 				var txRecipe = {
 					"Compiled" : false,
 					"Error"    : "",
@@ -946,7 +951,7 @@ func bindUtilities(vm *otto.Otto) {
 		            "Address"  : "",
 					"Hash"     : ""
 				};
-				
+
 				if (recipientAddress === "") {
 					Println("Create transaction.");
 					var addr = bc.Script(data, "lll-literal")
@@ -984,23 +989,23 @@ func bindUtilities(vm *otto.Otto) {
 					for (var i = 0; i < txData.length; i++){
 						txData[i] = txData[i].trim();
 					}
-					
+
 					//var rData = bc.Transact(recipientAddress,value,gas,gascost,txData);
 					//if (rData.Error !== ""){
 					//	return null
-					//}			
+					//}
 					//txRecipe.Success = true;
 					//txRecipe.Hash = rData.Data.Hash;
 				}
 				return txRecipe;
 			}
-			
+
 			// ******************** FileSystem (IPFS) ********************
-		
+
 			// Writes a file to the ipfs file system and returns the hash
-			// as a hex string. 
+			// as a hex string.
 			//
-			// NOTE: The hash is stripped of its first two bytes, in order to 
+			// NOTE: The hash is stripped of its first two bytes, in order to
 			// get a 32 byte value. The first byte is the hashing algorithm
 			// used (it's always 0x12), and the second is the length of the
 			// hash (it is always 0x20). See DappCore.ipfsHeader.
@@ -1013,7 +1018,7 @@ func bindUtilities(vm *otto.Otto) {
 					return "0x" + hashObj.Data.slice(4);
 				}
 			}
-			
+
 			// Takes the 32 byte hash. Prepends "1220" to create the full hash.
 			this.readFile = function(hash) {
 				// Remove '0x' if it is there.
@@ -1022,7 +1027,7 @@ func bindUtilities(vm *otto.Otto) {
 				}
 				var fullHash = ipfsHead + hash;
 				var fileObj = ipfs.GetBlock(fullHash);
-				
+
 				if(fileObj.Error !== "") {
 					return "";
 				} else {
@@ -1030,18 +1035,18 @@ func bindUtilities(vm *otto.Otto) {
 					return fileObj.Data;
 				}
 			}
-			
+
 			// ********************** Legal Markdown **********************
-			
+
 			// This function gives you a pdf representation of legal markdown.
-			// 
+			//
 			// NOTE: It is mostly used for legal contract dual-integration, as
-			// when you want to create a smart contract on the blockchain and 
-			// at the same time put an actual legal contract into the filesystem 
-			// as a complement. The hash of the legal contract would often be 
+			// when you want to create a smart contract on the blockchain and
+			// at the same time put an actual legal contract into the filesystem
+			// as a complement. The hash of the legal contract would often be
 			// part of the smart contract, as a guarantee.
 			//
-			// More info can be found here: 
+			// More info can be found here:
 			//
 			// https://github.com/eris-ltd/legalmarkdown
 			// http://lmd.io
@@ -1054,7 +1059,7 @@ func bindUtilities(vm *otto.Otto) {
 					return retData.Data;
 				}
 			}
-		
+
 		}
 	`)
 

@@ -19,7 +19,7 @@ type HttpReqProxy struct {
 }
 
 func ProxyFromHttpReq(r *http.Request) (*HttpReqProxy, error) {
-	
+
 	bts, err := ioutil.ReadAll(r.Body);
 	if err != nil {
 		return nil, err;
@@ -32,7 +32,7 @@ func ProxyFromHttpReq(r *http.Request) (*HttpReqProxy, error) {
 		p.Header = r.Header
 		p.Body = string(bts)
 		return p, nil
-	} 
+	}
 }
 
 type HttpResp struct {
@@ -60,10 +60,10 @@ func (has *HttpAPIServer) handleHttp(w http.ResponseWriter, r *http.Request) {
 		has.was.handleWs(w,r)
 		return
 	}
-	
-	p := u.Path 
+
+	p := u.Path
 	caller := strings.Split(strings.TrimLeft(p,"/"),"/")[1];
-	
+
 	rt := has.rm.GetRuntime(caller)
 	// TODO Update this. It's basically how we check if dapp is ready now.
 	if rt == nil {
@@ -72,9 +72,9 @@ func (has *HttpAPIServer) handleHttp(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "Dapp not in focus")
 		return
 	}
-	
+
 	// logger.Println("Incoming: %v\n", r)
-	
+
 	prx, errpr := ProxyFromHttpReq(r)
 	// Shouldn't happen.
 	if errpr != nil {
@@ -84,14 +84,19 @@ func (has *HttpAPIServer) handleHttp(w http.ResponseWriter, r *http.Request) {
 	// TODO this is a bad solution. It should be possible to pass objects (at least maps) right in.
 	bts, _ := json.Marshal(prx)
 	// DEBUG
-	fmt.Println("REQUEST: " + string(bts))
+	if (len(string(bts)) <= 10000) {
+		fmt.Println("REQUEST: " + string(bts))
+	} else {
+		toPrint := bts[:10000]
+		fmt.Println("REQUEST: " + string(toPrint) + " ...{truncated}")
+	}
 	ret, err := rt.CallFuncOnObj("network", "handleIncomingHttp", string(bts))
 
 	if err != nil {
 		has.writeError(w, 500, err.Error())
 		return
 	}
-	
+
 	rStr, sOk := ret.(string)
 	if !sOk {
 		has.writeError(w, 500, "Passing non string as return value from otto.")
@@ -104,7 +109,7 @@ func (has *HttpAPIServer) handleHttp(w http.ResponseWriter, r *http.Request) {
 		has.writeError(w, 500, errJson.Error())
 		return
 	}
-	
+
 	has.writeReq(hr, w)
 }
 

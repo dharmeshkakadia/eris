@@ -1,0 +1,89 @@
+{
+	"ImportPath": "github.com/eris-ltd/lllc-server",
+	"GoVersion": "go1.4.1",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "code.google.com/p/go-uuid/uuid",
+			"Comment": "null-15",
+			"Rev": "35bc42037350f0078e3c974c6ea690f1926603ab"
+		},
+		{
+			"ImportPath": "code.google.com/p/go.crypto/pbkdf2",
+			"Comment": "null-236",
+			"Rev": "69e2a90ed92d03812364aeb947b7068dc42e561e"
+		},
+		{
+			"ImportPath": "code.google.com/p/go.crypto/ripemd160",
+			"Comment": "null-236",
+			"Rev": "69e2a90ed92d03812364aeb947b7068dc42e561e"
+		},
+		{
+			"ImportPath": "code.google.com/p/go.crypto/scrypt",
+			"Comment": "null-236",
+			"Rev": "69e2a90ed92d03812364aeb947b7068dc42e561e"
+		},
+		{
+			"ImportPath": "github.com/codegangsta/cli",
+			"Comment": "1.2.0-50-ga14c5b4",
+			"Rev": "a14c5b47c7efa4ff80cc42e1079a34b4756f2311"
+		},
+		{
+			"ImportPath": "github.com/codegangsta/inject",
+			"Comment": "v1.0-rc1-4-g4b81725",
+			"Rev": "4b8172520a03fa190f427bbd284db01b459bfce7"
+		},
+		{
+			"ImportPath": "github.com/ebuchman/go-shell-pipes",
+			"Rev": "83e1324808622485314bff0fd97b8b944200a7a4"
+		},
+		{
+			"ImportPath": "github.com/eris-ltd/epm-go/utils",
+			"Comment": "v0.8-98-g65382ed",
+			"Rev": "65382eda2b4b28d94950f8c8703699d7608ede36"
+		},
+		{
+			"ImportPath": "github.com/eris-ltd/go-ethereum/crypto",
+			"Comment": "v0.6.8-2208-g30c55ac",
+			"Rev": "30c55aca186a1674806f2ca4b3c132d998e163d4"
+		},
+		{
+			"ImportPath": "github.com/eris-ltd/go-ethereum/ethutil",
+			"Comment": "v0.6.8-2208-g30c55ac",
+			"Rev": "30c55aca186a1674806f2ca4b3c132d998e163d4"
+		},
+		{
+			"ImportPath": "github.com/eris-ltd/go-ethereum/logger",
+			"Comment": "v0.6.8-2208-g30c55ac",
+			"Rev": "30c55aca186a1674806f2ca4b3c132d998e163d4"
+		},
+		{
+			"ImportPath": "github.com/eris-ltd/thelonious/monklog",
+			"Comment": "v0.8-59-gba47990",
+			"Rev": "ba47990cdc9c6666a2d0c870685346e3f79c9080"
+		},
+		{
+			"ImportPath": "github.com/go-martini/martini",
+			"Comment": "v1.0-119-gc657c03",
+			"Rev": "c657c03d1add219e93d48ffa493052c9a79c11b2"
+		},
+		{
+			"ImportPath": "github.com/obscuren/ecies",
+			"Rev": "d899334bba7bf4a157cab19d8ad836dcb1de0c34"
+		},
+		{
+			"ImportPath": "github.com/rakyll/globalconf",
+			"Rev": "415abc325023f1a00cd2d9fa512e0e71745791a2"
+		},
+		{
+			"ImportPath": "github.com/rakyll/goini",
+			"Rev": "907cca0f578a5316fb864ec6992dc3d9730ec58c"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/pbkdf2",
+			"Rev": "4ed45ec682102c643324fae5dff8dab085b6c300"
+		}
+	]
+}
