@@ -36,7 +36,7 @@ func homeDir() string {
 	return usr.HomeDir
 }
 
-// Server cache location in decerver tree
+// Server cache location in eris tree
 var ServerCache = path.Join(utils.Lllc, "server")
 
 // Handler for proxy requests (ie. a compile request from langauge other than go)

@@ -1,0 +1,10 @@
+compilers:
+  image: eris/compilers
+
+epmtest:
+        build: .
+        volumes:
+                - /tmp:/opt
+        command: ./test.sh
+        links:
+                - compilers

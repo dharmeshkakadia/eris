@@ -2,7 +2,7 @@
 
 # start the background containers
 docker-compose up --no-recreate -d compilers ipfs helloworldmaster
-sleep 30 # give the master a bit of time to get everything sorted
+sleep 5 # give the master a bit of time to get everything sorted
 
 # start the writer
 docker-compose up --no-recreate -d helloworldwrite

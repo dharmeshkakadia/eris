@@ -1,0 +1,12 @@
+
+FUNCDEF: CMD ":" NEWLINE ARGSET
+ARGSET: (INDENT ARGLINE NEWLINE)+
+ARGLINE: SIMPLE_STMT (=> SIMPLE_STMT)+
+SIMPLE_STMT: NUMBER | STRING | VAR | EXPR
+VAR: ($) IDENT
+IDENT: alphanumeric beginning with alpha not a keyword
+STRING: \" alphanumeric \"
+NUMBER: decimal | "0x" hexadecimal
+EXPR: "(" OP  (SIMPLE_STMT)+ ")"
+
+

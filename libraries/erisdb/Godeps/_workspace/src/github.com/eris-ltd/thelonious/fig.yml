@@ -1,0 +1,4 @@
+theltest:
+        build: .
+        command: /test.sh
+        

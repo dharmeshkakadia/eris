@@ -5,7 +5,7 @@ COPY start.sh /usr/local/bin/start.sh
 
 EXPOSE 4001 5001 8080
 
-VOLUME ["/root/.go-ipfs"]
+VOLUME ["/root/.ipfs"]
 
 ENTRYPOINT []
 

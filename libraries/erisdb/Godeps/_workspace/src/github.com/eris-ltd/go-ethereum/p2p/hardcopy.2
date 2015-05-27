@@ -1,0 +1,47 @@
+366 // the given message code.                                                                                                    |   -dialAddr : *peerAddr
+367 func (p *Peer) getProto(code uint64) (*proto, error) {                                                                        |   -disc : chan DiscReason
+368         p.runlock.RLock()                                                                                                     |   -identity : ClientIdentity
+369         defer p.runlock.RUnlock()                                                                                             |   -infolock : sync.Mutex
+370         for _, proto := range p.running {                                                                                     |   -listenAddr : *peerAddr
+371                 if code >= proto.offset && code < proto.offset+proto.maxcode {                                                |   -newPeerAddr : chan *peerAddr
+372                         return proto, nil                                                                                     |   -otherPeers : func() []*Peer
+373                 }                                                                                                             |   -ourID : ClientIdentity
+374         }                                                                                                                     |   -ourListenAddr : *peerAddr
+375         return nil, newPeerError(errInvalidMsgCode, "%d", code)                                                               |   -protoErr : chan error
+376 }                                                                                                                             |   -protoWG : sync.WaitGroup
+377                                                                                                                               |   -protocols : []Protocol
+378 func (p *Peer) closeProtocols() {                                                                                             |   -pubkeyHook : func(*peerAddr) error
+379         p.runlock.RLock()                                                                                                     |   -runBaseProtocol : bool
+380         for _, p := range p.running {                                                                                         |   -runlock : sync.RWMutex
+381                 close(p.in)                                                                                                   |   -running : map[string]*proto
+382         }                                                                                                                     |   -slot : int
+383         p.runlock.RUnlock()                                                                                                   |   -writeMu : sync.Mutex
+384         p.protoWG.Wait()                                                                                                      |    [embedded]
+385 }                                                                                                                             |   +*logger.Logger : *logger.Logger
+386                                                                                                                               |    [methods]
+387 // writeProtoMsg sends the given message on behalf of the given named protocol.                                               |   +Caps() : []Cap
+388 func (p *Peer) writeProtoMsg(protoName string, msg Msg) error {                                                               |   +Disconnect(reason DiscReason)
+389         p.runlock.RLock()                                                                                                     |   +Identity() : ClientIdentity
+390         proto, ok := p.running[protoName]                                                                                     |   +LocalAddr() : net.Addr
+391         p.runlock.RUnlock()                                                                                                   |   +RemoteAddr() : net.Addr
+392         if !ok {                                                                                                              |   +String() : string
+393                 return fmt.Errorf("protocol %s not handled by peer", protoName)                                               |   -closeProtocols()
+394         }                                                                                                                     |   -dispatch(msg Msg, protoDone chan ) :
+395         if msg.Code >= proto.maxcode {                                                                                        |   -getProto(code uint64) : *proto, erro
+396                 return newPeerError(errInvalidMsgCode, "code %x is out of range for protocol %q", msg.Code, protoName)        |   -loop() : DiscReason, error
+397         }                                                                                                                     |   -readLoop(msgc chan Msg, errc chan er
+398         msg.Code += proto.offset                                                                                              |   -setHandshakeInfo(id ClientIdentity,
+399         return p.writeMsg(msg, msgWriteTimeout)                                                                               |   -startBaseProtocol()
+400 }                                                                                                                             |   -startProto(offset uint64, impl Proto
+401                                                                                                                               |   -startSubprotocols(caps []Cap)
+402 // writeMsg writes a message to the connection.                                                                               |   -writeMsg(msg Msg, timeout time.Durat
+403 func (p *Peer) writeMsg(msg Msg, timeout time.Duration) error {                                                               |   -writeProtoMsg(protoName string, msg
+404         p.writeMu.Lock()                                                                                                      |    [functions]
+405         defer p.writeMu.Unlock()                                                                                              |   +NewPeer(id ClientIdentity, caps []Ca
+406         p.conn.SetWriteDeadline(time.Now().Add(timeout))                                                                      |   -newPeer(conn net.Conn, protocols []P
+407         if err := writeMsg(p.bufconn, msg); err != nil {                                                                      |   -newServerPeer(server *Server, conn n
+408                 return newPeerError(errWrite, "%v", err)                                                                      |
+409         }                                                                                                                     |¼-eofSignal : struct
+410         return p.bufconn.Flush()                                                                                              |    [fields]
+peer.go                                                                                                                            [Name] peer.go
+

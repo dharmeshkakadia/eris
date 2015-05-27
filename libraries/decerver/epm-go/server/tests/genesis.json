@@ -1,0 +1,59 @@
+{
+	"address": "0000000000THISISDOUG",
+	"pdx": "",
+	"doug": "Genesis DOUG/gendoug-v3.lll",
+	"unique": false,
+	"private-key": "",
+	"model": "vm",
+	"no-gendoug": false,
+	"consensus": "vm",
+	"difficulty": 15,
+	"public:mine": 1,
+	"public:create": 1,
+	"public:tx": 1,
+	"maxgastx": "",
+	"tapow": 0,
+	"blocktime": 0,
+	"vm": {
+		"suite-name": "std",
+		"permission-verify": {
+			"code-path": ""
+		},
+		"block-verify": {
+			"code-path": ""
+		},
+		"tx-verify": {
+			"code-path": ""
+		},
+		"compute-difficulty": {
+			"code-path": ""
+		},
+		"compute-participate": {
+			"code-path": ""
+		},
+		"participate": {
+			"code-path": ""
+		},
+		"precall": {
+			"code-path": ""
+		},
+		"postcall": {
+			"code-path": ""
+		},
+		"other": null
+	},
+	"accounts": [
+		{
+			"address": "0x26e9497c94d52f898efc5c107567ab4f50aad551",
+			"name": "billings",
+			"balance": "1000000000000000000000000000000000000",
+			"permissions": {
+				"create": 1,
+				"doug": 0,
+				"mine": 0,
+				"transact": 1
+			},
+			"stake": 0
+		}
+	]
+}

@@ -14,7 +14,7 @@ var (
 	logger    = &Logger{}
 )
 
-// Client cache location in decerver tree
+// Client cache location in eris tree
 var ClientCache = path.Join(utils.Lllc, "client")
 
 // filename is either a filename or literal code

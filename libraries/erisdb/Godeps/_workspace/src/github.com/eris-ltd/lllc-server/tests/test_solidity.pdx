@@ -1,0 +1,6 @@
+!{D
+deploy:
+	storage.sol => {{STOR}}
+transact:
+	{{STOR}} => set 0x5
+!}D

@@ -3,10 +3,9 @@ MAINTAINER Eris Industries <support@erisindustries.com>
 
 USER root
 
-COPY . /home/$user/.decerver/source
-RUN chown --recursive $user /home/$user
+COPY . /home/$user/.eris/dapps/helloworld/
+RUN chown --recursive $user:$user /home/$user
 
 USER $user
 
-VOLUME /home/$user/.decerver
-CMD /home/$user/.decerver/source/cmd.sh
+CMD /home/$user/.eris/dapps/helloworld/start.sh

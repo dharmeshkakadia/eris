@@ -1,6 +1,0 @@
-epmtest:
-        build: .
-        volumes:
-                - /tmp:/opt
-        command: /test.sh
-        

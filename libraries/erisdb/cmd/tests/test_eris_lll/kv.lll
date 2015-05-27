@@ -1,0 +1,8 @@
+{
+
+    (return 0 (lll
+        {
+            [[(calldataload 0x0)]](calldataload 0x20)
+        }
+    0))
+}

@@ -1,27 +1,36 @@
-# Dependencies
-
-## Make sure your machine has >= 1 GB of RAM.
-
-## Make sure go version >= 1.3.3 is installed and set up
 FROM golang:1.4
-MAINTAINER Eris Industries <contact@erisindustries.com>
+MAINTAINER Eris Industries <support@erisindustries.com>
 
-### The base image kills /var/lib/apt/lists/*.
-RUN apt-get update
-RUN apt-get install -y \
-  libgmp3-dev
+RUN apt-get update && \
+  apt-get install -y \
+  libgmp3-dev \
+  jq
 
-RUN mkdir --parents $GOPATH/src/github.com/eris-ltd
-WORKDIR $GOPATH/src/github.com/eris-ltd
+# Copy In the Good Stuff -- the branch checkout is temporary
+RUN git clone https://github.com/eris-ltd/eris-std-lib \
+  $GOPATH/src/github.com/eris-ltd/eris-std-lib && \
+  cd $GOPATH/src/github.com/eris-ltd/eris-std-lib && \
+  git checkout newepm
 
-RUN git clone https://github.com/eris-ltd/eris-std-lib
+COPY . $GOPATH/src/github.com/eris-ltd/epm-go/
+RUN cd $GOPATH/src/github.com/eris-ltd/epm-go/ && \
+  make
 
-## Copy In the Good Stuff
-COPY . $GOPATH/src/github.com/eris-ltd/epm-go
-RUN cd epm-go
-COPY *.sh /
+# Set a user
+ENV user eris
+RUN groupadd --system $user && \
+  useradd --system --create-home --gid $user $user
+COPY *.sh /home/$user/
+RUN mkdir /home/$user/genesis/
 
+# User gets the perms (gopath chown necessary for tests)
+RUN chown --recursive $user /home/$user && \
+  chown --recursive $user $GOPATH/src/github.com/eris-ltd
+WORKDIR /home/$user
+USER $user
+RUN epm init
 
 ## How Does It Run?
-EXPOSE 15254 15255
-CMD ["/start.sh"]
+VOLUME /home/$user/.eris/keys
+EXPOSE 15254 15255 15256
+CMD ["./start.sh"]

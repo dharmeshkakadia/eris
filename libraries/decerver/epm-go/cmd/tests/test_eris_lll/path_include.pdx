@@ -1,0 +1,10 @@
+include:
+	github.com/eris-ltd/eris-std-lib => {{esl}}
+	github.com/eris-ltd/eris-std-lib/epm => {{eslepm}}
+
+deploy:
+	a.lll => {{addr}}
+deploy:
+	{{esl}}/epm/aa.lll => {{addr2}}
+deploy:
+	{{eslepm}}/aa.lll => {{addr3}}

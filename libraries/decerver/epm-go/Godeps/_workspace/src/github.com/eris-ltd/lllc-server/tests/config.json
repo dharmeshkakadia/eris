@@ -1,0 +1,88 @@
+{
+	"lll": {
+		"url": "http://localhost:8090/compile",
+		"net": true,
+		"extensions": [
+			"lll",
+			"def"
+		],
+		"regexes": [
+			"\\(include \"(.+?)\"\\)"
+		],
+		"replaces": [
+			[
+				"(include \"",
+				".lll\")"
+			]
+		],
+		"cmd": [
+			"/usr/local/src/eris-cpp/build/lllc/lllc",
+			"_"
+		],
+		"abi": null
+	},
+	"se": {
+		"url": "http://localhost:8090/compile",
+		"net": true,
+		"extensions": [
+			"se"
+		],
+		"regexes": [
+			"create\\(\"(.+?)\"\\)",
+			"create\\('(.+?)'\\)"
+		],
+		"replaces": [
+			[
+				"create(\"",
+				".se\")"
+			],
+			[
+				"create('",
+				".se')"
+			]
+		],
+		"cmd": [
+			"/usr/local/bin/serpent",
+			"compile",
+			"_"
+		],
+		"abi": [
+			"/usr/local/bin/serpent",
+			"mk_full_signature",
+			"_"
+		]
+	},
+	"sol": {
+		"url": "http://localhost:8090/compile",
+		"net": true,
+		"extensions": [
+			"sol"
+		],
+		"regexes": [],
+		"replaces": [],
+		"cmd": [
+			"/usr/bin/solc",
+			"_",
+			"--binary",
+			"stdout",
+			"|",
+			"grep",
+			"[0-9a-fA-F]",
+			"|",
+			"sort",
+			"-rn",
+			"|",
+			"awk",
+			"{print $1; exit}"
+		],
+		"abi": [
+			"/usr/bin/solc",
+			"_",
+			"--json-abi",
+			"stdout",
+			"|",
+			"awk",
+			"NR \u003e= 4"
+		]
+	}
+}

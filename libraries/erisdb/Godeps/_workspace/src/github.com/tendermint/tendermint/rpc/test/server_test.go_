@@ -1,0 +1,72 @@
+package rpc
+
+import (
+	"github.com/gorilla/websocket"
+	"log"
+	"net/http"
+	_ "net/http/pprof"
+	"runtime/pprof"
+	"testing"
+	"time"
+)
+
+func TestSimpleProf(t *testing.T) {
+	log.Println(http.ListenAndServe("localhost:6060", nil))
+}
+
+func TestManyConnections(t *testing.T) {
+	go func() {
+		log.Println(http.ListenAndServe("localhost:6060", nil))
+	}()
+	client := clients["JSONRPC"]
+	log.Println("Waiting...")
+	time.Sleep(time.Second * 5)
+	log.Println("GO")
+	for j := 0; j < 10; j++ {
+		for i := 0; i < 1000; i++ {
+			go func() {
+				time.Sleep(time.Second * 5)
+				_, err := client.Status()
+				if err != nil {
+					t.Fatal(err)
+				}
+				time.Sleep(time.Second * 5)
+			}()
+		}
+		log.Println("DONE")
+		log.Println("PPROF:", pprof.Lookup("goroutine").Count())
+		time.Sleep(time.Second * 15)
+	}
+	log.Println("DONE")
+	time.Sleep(time.Second * 100)
+}
+
+func TestManyWSConnections(t *testing.T) {
+	go func() {
+		log.Println(http.ListenAndServe("localhost:6060", nil))
+	}()
+
+	log.Println("Waiting...")
+	time.Sleep(time.Second * 5)
+	log.Println("GO")
+	for j := 0; j < 10; j++ {
+		log.Println("PPROF PRE:", pprof.Lookup("goroutine").Count())
+		for i := 0; i < 50; i++ {
+			go func() {
+				time.Sleep(time.Second * 5)
+				dialer := websocket.DefaultDialer
+				rHeader := http.Header{}
+				con, _, _ := dialer.Dial(websocketAddr, rHeader)
+				time.Sleep(time.Second * 5)
+				con.Close()
+				log.Println("DONE CLIENT CON")
+			}()
+		}
+		log.Println("DONE")
+		log.Println("PPROF POST:", pprof.Lookup("goroutine").Count())
+		time.Sleep(time.Second * 15)
+	}
+	log.Println("DONE")
+	time.Sleep(time.Second * 100)
+
+}

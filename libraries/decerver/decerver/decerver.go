@@ -66,14 +66,14 @@ func (dc *DeCerver) createFileIO() {
 	if err != nil {
 		panic("User error: " + err.Error())
 	}
-	root := path.Join(usr.HomeDir, ".decerver")
+	root := path.Join(usr.HomeDir, ".eris")
 	dc.fileIO = fileio.NewFileIO(root)
 	dc.fileIO.InitPaths()
 }
 
 func (dc *DeCerver) loadConfig(){
 	fio := dc.fileIO
-	config := &decerver.DCConfig{} 
+	config := &decerver.DCConfig{}
 	err := fio.UnmarshalJsonFromFile(fio.Root(),"config",config)
 	if err != nil {
 		logger.Println("Failed to load config: " + err.Error() )

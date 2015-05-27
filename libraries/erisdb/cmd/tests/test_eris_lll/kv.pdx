@@ -1,0 +1,5 @@
+
+deploy:
+    kv.lll => {{A}}
+transact:
+    {{A}} => 0x5 "ethan"	

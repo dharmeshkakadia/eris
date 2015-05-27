@@ -20,7 +20,7 @@ WORKDIR $GOPATH/src/github.com/eris-ltd
 
 # Install EPM.
 COPY epm-go $GOPATH/src/github.com/eris-ltd/epm-go
-RUN cd epm-go/cmd/epm; go get .
+RUN cd epm-go; make
 
 # Install Decerver.
 COPY decerver $GOPATH/src/github.com/eris-ltd/decerver
@@ -32,12 +32,12 @@ ENV user eris
 RUN groupadd --system $user && useradd --system --create-home --gid $user $user
 
 ## Listen to clients outside the container.
-COPY config /home/$user/.decerver/
+COPY config /home/$user/.eris/
 
 ## Use the local compiler.
-COPY config.json /home/$user/.decerver/languages/
+COPY config.json /home/$user/.eris/languages/
 
-RUN chown --recursive $user /home/$user/.decerver
+RUN chown --recursive $user /home/$user/.eris
 
 # Expose ports.
 # https://github.com/eris-ltd/decerver/wiki/Ports

@@ -8,11 +8,13 @@ RUN apt-get update && \
 
 # Copy In the Good Stuff -- the branch checkout is temporary
 RUN git clone https://github.com/eris-ltd/eris-std-lib \
-  $GOPATH/src/github.com/eris-ltd/eris-std-lib
+  $GOPATH/src/github.com/eris-ltd/eris-std-lib && \
+  cd $GOPATH/src/github.com/eris-ltd/eris-std-lib && \
+  git checkout newepm
 
-COPY . $GOPATH/src/github.com/eris-ltd/
-RUN cd $GOPATH/src/github.com/eris-ltd/epm-go/cmd/epm && \
-  go install
+COPY . $GOPATH/src/github.com/eris-ltd/epm-go/
+RUN cd $GOPATH/src/github.com/eris-ltd/epm-go/ && \
+  make
 
 # Set a user
 ENV user eris
@@ -29,6 +31,6 @@ USER $user
 RUN epm init
 
 ## How Does It Run?
-VOLUME /home/$user/.decerver/keys
+VOLUME /home/$user/.eris/keys
 EXPOSE 15254 15255 15256
 CMD ["./start.sh"]

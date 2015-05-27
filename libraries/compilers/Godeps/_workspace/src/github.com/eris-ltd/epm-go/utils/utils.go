@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 	"os/user"
 	"path"
 	"reflect"
@@ -21,7 +22,7 @@ import (
 func resolveDecerverRoot() string {
 	DecerverEnv := os.Getenv("DECERVER")
 	if DecerverEnv == "" {
-		return path.Join(usr.HomeDir, ".decerver")
+		return path.Join(usr.HomeDir, ".eris")
 	}
 	return DecerverEnv
 }
@@ -31,7 +32,7 @@ var (
 	ErisLtd = path.Join(GoPath, "src", "github.com", "eris-ltd")
 
 	usr, _      = user.Current()        // error?!
-	Decerver    = resolveDecerverRoot() //path.Join(usr.HomeDir, ".decerver")
+	Decerver    = resolveDecerverRoot() //path.Join(usr.HomeDir, ".eris")
 	Dapps       = path.Join(Decerver, "dapps")
 	Blockchains = path.Join(Decerver, "blockchains")
 	Filesystems = path.Join(Decerver, "filesystems")
@@ -155,6 +156,19 @@ func WriteJson(config interface{}, config_file string) error {
 	return err
 }
 
+func ReadJson(config interface{}, config_file string) error {
+	b, err := ioutil.ReadFile(config_file)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(b, config)
+	if err != nil {
+		fmt.Println("error unmarshalling config from file:", err)
+		return err
+	}
+	return nil
+}
+
 // keeps N bytes of the conversion
 func NumberToBytes(num interface{}, N int) []byte {
 	buf := new(bytes.Buffer)
@@ -196,6 +210,16 @@ func Coerce2Hex(s string) string {
 	return ret
 }
 
+func IsHex(s string) bool {
+	if len(s) < 2 {
+		return false
+	}
+	if s[:2] == "0x" {
+		return true
+	}
+	return false
+}
+
 func AddHex(s string) string {
 	if len(s) < 2 {
 		return "0x" + s
@@ -211,10 +235,24 @@ func AddHex(s string) string {
 func StripHex(s string) string {
 	if len(s) > 1 {
 		if s[:2] == "0x" {
-			return s[2:]
+			s = s[2:]
+			if len(s)%2 != 0 {
+				s = "0" + s
+			}
+			return s
 		}
 	}
 	return s
+}
+
+func StripZeros(s string) string {
+	i := 0
+	for ; i < len(s); i++ {
+		if s[i] != '0' {
+			break
+		}
+	}
+	return s[i:]
 }
 
 func Usr() string {
@@ -248,7 +286,7 @@ func openLogFile(Datadir string, filename string) *os.File {
 	return file
 }
 
-// Create the default decerver tree
+// Create the default eris directory tree
 func InitDecerverDir() (err error) {
 	for _, d := range MajorDirs {
 		err := InitDataDir(d)
@@ -342,4 +380,34 @@ func ClearDir(dir string) error {
 		}
 	}
 	return nil
+}
+
+func Editor(file string) error {
+	editr := os.Getenv("EDITOR")
+	if strings.Contains(editr, "/") {
+		editr = path.Base(editr)
+	}
+	switch editr {
+	case "", "vim", "vi":
+		return vi(file)
+	case "emacs":
+		return emacs(file)
+	}
+	return fmt.Errorf("Unknown editor %s", editr)
+}
+
+func emacs(file string) error {
+	cmd := exec.Command("emacs", file)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
+}
+
+func vi(file string) error {
+	cmd := exec.Command("vim", file)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }

@@ -1,0 +1,101 @@
+package core_types
+
+import (
+	"github.com/eris-ltd/epm-go/Godeps/_workspace/src/github.com/tendermint/tendermint/account"
+	sm "github.com/eris-ltd/epm-go/Godeps/_workspace/src/github.com/tendermint/tendermint/state"
+	"github.com/eris-ltd/epm-go/Godeps/_workspace/src/github.com/tendermint/tendermint/types"
+)
+
+type ResponseGenPrivAccount struct {
+	PrivAccount *account.PrivAccount `json:"priv_account"`
+}
+
+type ResponseGetAccount struct {
+	Account *account.Account `json:"account"`
+}
+
+type ResponseGetStorage struct {
+	Key   []byte `json:"key"`
+	Value []byte `json:"value"`
+}
+
+type ResponseCall struct {
+	Return  []byte `json:"return"`
+	GasUsed uint64 `json:"gas_used"`
+	// TODO ...
+}
+
+type ResponseListAccounts struct {
+	BlockHeight uint               `json:"block_height"`
+	Accounts    []*account.Account `json:"accounts"`
+}
+
+type StorageItem struct {
+	Key   []byte `json:"key"`
+	Value []byte `json:"value"`
+}
+
+type ResponseDumpStorage struct {
+	StorageRoot  []byte        `json:"storage_root"`
+	StorageItems []StorageItem `json:"storage_items"`
+}
+
+type ResponseBlockchainInfo struct {
+	LastHeight uint               `json:"last_height"`
+	BlockMetas []*types.BlockMeta `json:"block_metas"`
+}
+
+type ResponseGetBlock struct {
+	BlockMeta *types.BlockMeta `json:"block_meta"`
+	Block     *types.Block     `json:"block"`
+}
+
+type ResponseBroadcastTx struct {
+	Receipt Receipt `json:"receipt"`
+}
+
+type ResponseListUnconfirmedTxs struct {
+	Txs []types.Tx `json:"txs"`
+}
+
+type Receipt struct {
+	TxHash          []byte `json:"tx_hash"`
+	CreatesContract uint8  `json:"creates_contract"`
+	ContractAddr    []byte `json:"contract_addr"`
+}
+
+type ResponseStatus struct {
+	GenesisHash       []byte `json:"genesis_hash"`
+	Network           string `json:"network"`
+	LatestBlockHash   []byte `json:"latest_block_hash"`
+	LatestBlockHeight uint   `json:"latest_block_height"`
+	LatestBlockTime   int64  `json:"latest_block_time"` // nano
+}
+
+type ResponseNetInfo struct {
+	Moniker   string   `json:"moniker"`
+	Network   string   `json:"network"`
+	Listening bool     `json:"listening"`
+	Listeners []string `json:"listeners"`
+	Peers     []Peer   `json:"peers"`
+}
+
+type Peer struct {
+	types.NodeInfo `json:"node_info"`
+	IsOutbound     bool `json:"is_outbound"`
+}
+
+type ResponseSignTx struct {
+	Tx types.Tx `json:"tx"`
+}
+
+type ResponseListValidators struct {
+	BlockHeight         uint            `json:"block_height"`
+	BondedValidators    []*sm.Validator `json:"bonded_validators"`
+	UnbondingValidators []*sm.Validator `json:"unbonding_validators"`
+}
+
+type ResponseDumpConsensusState struct {
+	RoundState      string   `json:"round_state"`
+	PeerRoundStates []string `json:"peer_round_states"`
+}

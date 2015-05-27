@@ -1,5 +1,0 @@
-deploy:
-    a.lll => {{doug}}
-modify-deploy:
-    a.lll => {{doug2}}
-    [[0x60]]0x5050 => [[0x60]]{{doug}}

@@ -3,13 +3,18 @@
 echo ""
 echo ""
 echo "Hello There! I'm your friendly blockchain container."
-key_session="$(strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 10 | tr -d '\n' ; echo)"
+key_session_seed="$(strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 10 | tr -d '\n' ; echo)"
+key_session=${KEY_SESSION:=$key_session_seed}
 log_level=${LOG_LEVEL:=3}
 chain_name=${CHAIN_NAME:=this_chain}
 local_port=${LOCAL_PORT:=15254}
 max_peers=${MAX_PEERS:=10}
 rpc_port=${RPC_PORT:=15255}
 fetch_port=${FETCH_PORT:=50505}
+remote_host=$REMOTE_HOST
+remote_port=$REMOTE_PORT
+remote_fetch_host=${REMOTE_FETCH_HOST:=$remote_host}
+remote_fetch_port=$REMOTE_FETCH_PORT
 
 echo ""
 echo ""
@@ -51,7 +56,6 @@ then
   echo ""
   echo "Setting Defaults"
   epm config key_session:$key_session local_port:$local_port max_peers:$max_peers
-  # epm run & sleep 3 && kill $(epm plop pid)
   echo "The chain has been built and checked out."
 else
   echo "I'm not a master."
@@ -62,14 +66,13 @@ echo ""
 echo "Checking if Fetcher"
 if [ "$FETCH" = "true" ]
 then
-  echo "I'm supposed to fetch so I will grab the chain from $REMOTE_HOST:$REMOTE_FETCH_PORT."
+  echo "I'm supposed to fetch so I will grab the chain from $remote_fetch_host:$remote_fetch_port."
   echo ""
-  epm --log $log_level fetch --checkout --name $chain_name $REMOTE_HOST:$REMOTE_FETCH_PORT
+  epm --log $log_level fetch --checkout --name $chain_name $remote_fetch_host:$remote_fetch_port
   echo ""
-  echo "Catching up the chain from $REMOTE_HOST:$REMOTE_PORT. This will take a few seconds."
   echo ""
-  epm config key_session:$key_session local_port:$local_port remote_host:$REMOTE_HOST remote_port:$REMOTE_PORT use_seed:true
-  # epm --log $log_level run & sleep 30 && kill $(epm plop pid)
+  echo "Setting Defaults."
+  epm config key_session:$key_session local_port:$local_port max_peers:$max_peers
   echo "The chain has been fetched and checked out."
 else
   echo "I'm not a fetcher."
@@ -99,7 +102,7 @@ echo ""
 echo "Connect Check."
 if [ "$CONNECT" = "true" ]
 then
-  epm config remote_host:$REMOTE_HOST remote_port:$REMOTE_PORT use_seed:true
+  epm config remote_host:$remote_host remote_port:$remote_port use_seed:true
 fi
 
 echo ""
@@ -134,8 +137,13 @@ CHAINID=$(epm plop chainid)
 
 echo ""
 echo ""
-echo "My Public Address is ... ->"
-epm plop addr
+echo "My genesis.json is ... ->"
+epm plop genesis
+
+echo ""
+echo ""
+echo "My config file is ... ->"
+epm plop config
 
 echo ""
 echo ""

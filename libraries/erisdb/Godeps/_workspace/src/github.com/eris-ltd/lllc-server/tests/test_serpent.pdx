@@ -1,0 +1,6 @@
+!{D
+deploy:
+	subcurrency.se => {{SC}}
+transact:
+	{{SC}} => send 0x4b4363cde27c2eb05e66357db05bc5c88f850c1a 0x5
+!}D

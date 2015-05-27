@@ -1,0 +1,4 @@
+{
+	(include "test-inc2.lll")
+	[[0x5]]0x5
+}
