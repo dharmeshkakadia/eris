@@ -286,7 +286,7 @@ func (e *EPM) packArgsABI(to string, data ...string) ([]string, error) {
 		funcName := data[0]
 		args := data[1:]
 
-		//fmt.Println("ABI Spec", abiSpec)
+//		fmt.Println("ABI Spec", abiSpec)
 		a := []interface{}{}
 		for _, aa := range args {
 			aa = coerceHex(aa, true)
@@ -316,6 +316,7 @@ func (e *EPM) Transact(args []string) (err error) {
 	data := args[1:]
 
 	packed, err := e.packArgsABI(to, data...)
+
 	if err != nil {
 		return
 	}
@@ -489,10 +490,16 @@ func ReadAbi(root, to string) (abi.ABI, bool) {
 		return abi.NullABI, false
 	}
 	b, err := ioutil.ReadFile(p)
+
 	if err != nil {
 		log.Println("Failed to read abi file:", err)
 		return abi.NullABI, false
 	}
+
+	if (len(b) == 0) {
+		return abi.NullABI, false
+	}
+
 	a := new(abi.ABI)
 
 	if err := a.UnmarshalJSON(b); err != nil {

@@ -25,10 +25,10 @@ package crypto
 
 import (
 	"bytes"
+	"code.google.com/p/go-uuid/uuid"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"encoding/json"
-	"github.com/eris-ltd/lllc-server/Godeps/_workspace/src/code.google.com/p/go-uuid/uuid"
 	"io"
 )
 

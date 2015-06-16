@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/eris-ltd/lllc-server/Godeps/_workspace/src/github.com/eris-ltd/go-ethereum/ethutil"
-	"github.com/eris-ltd/lllc-server/Godeps/_workspace/src/github.com/eris-ltd/go-ethereum/logger"
+	"github.com/eris-ltd/go-ethereum/ethutil"
+	"github.com/eris-ltd/go-ethereum/logger"
 )
 
 var keylogger = logger.NewLogger("KEY")

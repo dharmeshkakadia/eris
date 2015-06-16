@@ -10,7 +10,7 @@ import (
 	"path"
 	"testing"
 
-	"github.com/eris-ltd/lllc-server/Godeps/_workspace/src/github.com/codegangsta/inject"
+	"github.com/codegangsta/inject"
 )
 
 var currentRoot, _ = os.Getwd()

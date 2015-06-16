@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/eris-ltd/lllc-server/Godeps/_workspace/src/github.com/eris-ltd/go-ethereum/ethutil"
+	"github.com/eris-ltd/go-ethereum/ethutil"
 )
 
 type KeyRing struct {

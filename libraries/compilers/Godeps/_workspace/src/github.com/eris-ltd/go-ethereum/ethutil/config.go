@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/eris-ltd/lllc-server/Godeps/_workspace/src/github.com/rakyll/globalconf"
+	"github.com/rakyll/globalconf"
 )
 
 // Config struct

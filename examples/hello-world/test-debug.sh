@@ -22,8 +22,8 @@ echo ""
 # start the reader
 docker-compose up --no-recreate helloworldread &
 
-# docker-compose up --no-recreate seleniumnode &
+docker-compose up --no-recreate seleniumnode &
 
-# docker-compose run helloworldtest
-# docker-compose kill
-# docker-compose rm --force
+docker-compose run helloworldtest
+docker-compose kill
+docker-compose rm --force

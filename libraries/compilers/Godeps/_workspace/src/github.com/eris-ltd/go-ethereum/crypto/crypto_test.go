@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/eris-ltd/lllc-server/Godeps/_workspace/src/github.com/eris-ltd/go-ethereum/crypto/secp256k1"
-	"github.com/eris-ltd/lllc-server/Godeps/_workspace/src/github.com/eris-ltd/go-ethereum/ethutil"
+	"github.com/eris-ltd/go-ethereum/crypto/secp256k1"
+	"github.com/eris-ltd/go-ethereum/ethutil"
 )
 
 // These tests are sanity checks.

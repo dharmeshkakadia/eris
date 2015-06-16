@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/eris-ltd/lllc-server/Godeps/_workspace/src/github.com/eris-ltd/go-ethereum/ethutil"
+	"github.com/eris-ltd/go-ethereum/ethutil"
 )
 
 func openLogFile(datadir string, filename string) *os.File {

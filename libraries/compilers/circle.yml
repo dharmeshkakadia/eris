@@ -2,6 +2,10 @@ machine:
   services:
     - docker
 
+dependencies:
+  override:
+    - ""
+
 test:
   override:
     - "docker build -t eris/compilers:unstable .":

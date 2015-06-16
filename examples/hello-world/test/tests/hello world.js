@@ -28,9 +28,10 @@ module.exports = {
       .setValue('//textarea[@id="input"]', "Hello, world!")
       .click('(//button)[1]')
       .waitForElementPresent('//div[@id="alertPresent"]', 1000)
-      .pause(500) // blocks take a bit of time to propagate and be processed by read nodes
+      .pause(5000) // blocks take a bit of time to propagate and be processed by read nodes
       .url('http://helloworldread:3000/helloworld/')
-      .waitForElementVisible('//input[@id="filenameGet"]', 10000)
+      .waitForElementVisible('//input[@id="filenameGet"]', 15000)
+      .pause(3000) // blocks take a bit of time to propagate and be processed by read nodes
       .setValue('//input[@id="filenameGet"]', "greeting")
       .click('(//button)[2]')
       .assert.value('//textarea[@id="output"]', "Hello, world!")

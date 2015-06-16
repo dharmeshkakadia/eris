@@ -3,9 +3,9 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
-	"github.com/eris-ltd/lllc-server"
 	"github.com/eris-ltd/lllc-server/Godeps/_workspace/src/github.com/codegangsta/cli"
 	"github.com/eris-ltd/lllc-server/Godeps/_workspace/src/github.com/eris-ltd/epm-go/utils"
+	"github.com/eris-ltd/lllc-server"
 	"log"
 	"os"
 	"runtime"
@@ -20,7 +20,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "lllc-server"
 	app.Usage = ""
-	app.Version = "0.1.0"
+	app.Version = "0.9.0"
 	app.Author = "Ethan Buchman"
 	app.Email = "ethan@erisindustries.com"
 
@@ -28,9 +28,15 @@ func main() {
 	app.Before = before
 
 	app.Flags = []cli.Flag{
-		portFlag,
+		securePortFlag,
+		unsecurePortFlag,
+		unsecureOnlyFlag,
+		secureOnlyFlag,
+		certFlag,
+		keyFlag,
 		internalFlag,
 		logFlag,
+		hostFlag,
 	}
 
 	app.Commands = []cli.Command{
@@ -109,13 +115,41 @@ func cliProxy(c *cli.Context) {
 }
 
 func cliServer(c *cli.Context) {
+
 	utils.InitDataDir(lllcserver.ServerCache)
-	addr := ""
+	addrUnsecure := ""
+	addrSecure := ""
+
 	if c.Bool("internal") {
-		addr = "localhost"
+		addrUnsecure = "localhost"
+		addrSecure = "localhost"
 	}
-	addr += ":" + strconv.Itoa(c.Int("port"))
-	lllcserver.StartServer(addr)
+
+	addrUnsecure += ":" + strconv.Itoa(c.Int("unsecure-port"))
+	addrSecure += ":" + strconv.Itoa(c.Int("secure-port"))
+
+	if c.Bool("secure-only") {
+		addrUnsecure = ""
+	}
+	if c.Bool("no-ssl") {
+		addrSecure = ""
+	}
+
+	key := c.String("key")
+	cert := c.String("cert")
+
+	if !c.Bool("no-ssl") {
+
+		if _, err := os.Stat(key); os.IsNotExist(err) {
+			ifExit(err)
+		}
+		if _, err := os.Stat(cert); os.IsNotExist(err) {
+			ifExit(err)
+		}
+
+	}
+
+	lllcserver.StartServer(addrUnsecure, addrSecure, key, cert)
 }
 
 // so we can catch panics
@@ -150,9 +184,44 @@ var (
 	}
 
 	portFlag = cli.IntFlag{
-		Name:  "port, p",
+		Name:  "port",
+		Usage: "set the proxy port",
+		Value: 9097,
+	}
+
+	unsecurePortFlag = cli.IntFlag{
+		Name:  "unsecure-port, p",
 		Usage: "set the listening port",
 		Value: 9099,
+	}
+
+	securePortFlag = cli.IntFlag{
+		Name:  "secure-port, P",
+		Usage: "set the listening port",
+		Value: 9098,
+	}
+
+	secureOnlyFlag = cli.BoolFlag{
+		Name:  "secure-only, s",
+		Usage: "only use https",
+	}
+
+	unsecureOnlyFlag = cli.BoolFlag{
+		Name:  "no-ssl",
+		Usage: "do not use ssl",
+		EnvVar: "NO_SSL",
+	}
+
+	certFlag = cli.StringFlag{
+		Name:  "cert",
+		Usage: "set the https certificate",
+		Value: "",
+	}
+
+	keyFlag = cli.StringFlag{
+		Name:  "key",
+		Usage: "set the https certificate",
+		Value: "",
 	}
 
 	internalFlag = cli.BoolFlag{
@@ -162,8 +231,9 @@ var (
 
 	hostFlag = cli.StringFlag{
 		Name:  "host",
-		Usage: "set the server host (inlucde http://)",
+		Usage: "set the server host (include http(s)://)",
 		Value: "",
+		EnvVar: "HOST",
 	}
 )
 

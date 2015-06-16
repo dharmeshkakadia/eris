@@ -64,14 +64,14 @@ package crypto
 
 import (
 	"bytes"
+	"code.google.com/p/go-uuid/uuid"
+	"code.google.com/p/go.crypto/scrypt"
 	"crypto/aes"
 	"crypto/cipher"
 	crand "crypto/rand"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"github.com/eris-ltd/lllc-server/Godeps/_workspace/src/code.google.com/p/go-uuid/uuid"
-	"github.com/eris-ltd/lllc-server/Godeps/_workspace/src/code.google.com/p/go.crypto/scrypt"
 	"io"
 	"os"
 	"path"

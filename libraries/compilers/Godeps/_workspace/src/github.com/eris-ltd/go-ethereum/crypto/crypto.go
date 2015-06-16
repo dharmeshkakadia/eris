@@ -13,13 +13,13 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/eris-ltd/lllc-server/Godeps/_workspace/src/code.google.com/p/go-uuid/uuid"
-	"github.com/eris-ltd/lllc-server/Godeps/_workspace/src/code.google.com/p/go.crypto/pbkdf2"
-	"github.com/eris-ltd/lllc-server/Godeps/_workspace/src/code.google.com/p/go.crypto/ripemd160"
-	"github.com/eris-ltd/lllc-server/Godeps/_workspace/src/github.com/eris-ltd/go-ethereum/crypto/secp256k1"
-	"github.com/eris-ltd/lllc-server/Godeps/_workspace/src/github.com/eris-ltd/go-ethereum/crypto/sha3"
-	"github.com/eris-ltd/lllc-server/Godeps/_workspace/src/github.com/eris-ltd/go-ethereum/ethutil"
-	"github.com/eris-ltd/lllc-server/Godeps/_workspace/src/github.com/obscuren/ecies"
+	"code.google.com/p/go-uuid/uuid"
+	"code.google.com/p/go.crypto/pbkdf2"
+	"code.google.com/p/go.crypto/ripemd160"
+	"github.com/eris-ltd/go-ethereum/crypto/secp256k1"
+	"github.com/eris-ltd/go-ethereum/crypto/sha3"
+	"github.com/eris-ltd/go-ethereum/ethutil"
+	"github.com/obscuren/ecies"
 )
 
 func init() {

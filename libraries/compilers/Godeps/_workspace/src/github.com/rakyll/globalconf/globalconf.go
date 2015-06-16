@@ -8,7 +8,7 @@ import (
 	"path"
 	"strings"
 
-	ini "github.com/eris-ltd/lllc-server/Godeps/_workspace/src/github.com/rakyll/goini"
+	ini "github.com/rakyll/goini"
 )
 
 const (

@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/eris-ltd/lllc-server",
-	"GoVersion": "go1.4.1",
+	"GoVersion": "go1.4.2",
 	"Packages": [
 		"./..."
 	],
@@ -65,9 +65,21 @@
 			"Rev": "ba47990cdc9c6666a2d0c870685346e3f79c9080"
 		},
 		{
+			"ImportPath": "github.com/ethereum/serpent-go",
+			"Rev": "5767a0dbd759d313df3f404dadb7f98d7ab51443"
+		},
+		{
 			"ImportPath": "github.com/go-martini/martini",
 			"Comment": "v1.0-119-gc657c03",
 			"Rev": "c657c03d1add219e93d48ffa493052c9a79c11b2"
+		},
+		{
+			"ImportPath": "github.com/jehiah/go-strftime",
+			"Rev": "834e15c05a45371503440cc195bbd05c9a0968d9"
+		},
+		{
+			"ImportPath": "github.com/martini-contrib/gorelic",
+			"Rev": "f8b0843aa3ab66d8734aa7d9acf399bdc197c65d"
 		},
 		{
 			"ImportPath": "github.com/obscuren/ecies",
@@ -80,6 +92,28 @@
 		{
 			"ImportPath": "github.com/rakyll/goini",
 			"Rev": "907cca0f578a5316fb864ec6992dc3d9730ec58c"
+		},
+		{
+			"ImportPath": "github.com/segmentio/analytics-go",
+			"Comment": "v2.0.0-2-g0f10a19",
+			"Rev": "0f10a1942c812a6dc8b4978ed8a80cfc42e8a617"
+		},
+		{
+			"ImportPath": "github.com/xtgo/uuid",
+			"Rev": "a0b114877d4caeffbd7f87e3757c17fce570fea7"
+		},
+		{
+			"ImportPath": "github.com/yvasiyarov/go-metrics",
+			"Rev": "c25f46c4b94079672242ec48a545e7ca9ebe3aec"
+		},
+		{
+			"ImportPath": "github.com/yvasiyarov/gorelic",
+			"Comment": "v0.0.6-24-g1c0ed4e",
+			"Rev": "1c0ed4e38e62548df0051140795e569d35cf2ded"
+		},
+		{
+			"ImportPath": "github.com/yvasiyarov/newrelic_platform_go",
+			"Rev": "cef0ebd22fb48453114ba645d0fb80fea6e670de"
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/pbkdf2",
